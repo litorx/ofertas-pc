@@ -64,7 +64,8 @@
     "amd ryzen 7 5700x",
     "Ryzen 5 5600",
     "8 GB DDR4-3200",
-    "RX 7600 8GB"
+    "RX 7600 8GB",
+    "RTX 5050 8GB"
   ],
   "pecas": [
     {
@@ -587,6 +588,30 @@
       ],
       "exigir": [
         "\\b7600\\b",
+        "\\b8\\s*GB\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "RTX 5050 8GB",
+      "icone": "📦",
+      "rotulo": "RTX 5050 8GB",
+      "teto": 1700,
+      "piso": 425,
+      "ancora": "RTX",
+      "tirar": [],
+      "incluir": [
+        "\\bRTX\\b"
+      ],
+      "exigir": [
+        "\\b5050\\b",
         "\\b8\\s*GB\\b"
       ],
       "excluir": [
