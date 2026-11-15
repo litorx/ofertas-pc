@@ -63,7 +63,8 @@
     "memoria ram ddr4",
     "amd ryzen 7 5700x",
     "Ryzen 5 5600",
-    "8 GB DDR4-3200"
+    "8 GB DDR4-3200",
+    "RX 7600 8GB"
   ],
   "pecas": [
     {
@@ -563,6 +564,30 @@
       "exigir": [
         "\\bGB\\b",
         "\\bDDR4-3200\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "RX 7600 8GB",
+      "icone": "📦",
+      "rotulo": "RX 7600 8GB",
+      "teto": 1700,
+      "piso": 425,
+      "ancora": "RX",
+      "tirar": [],
+      "incluir": [
+        "\\bRX\\b"
+      ],
+      "exigir": [
+        "\\b7600\\b",
+        "\\b8\\s*GB\\b"
       ],
       "excluir": [
         "pc gamer",
