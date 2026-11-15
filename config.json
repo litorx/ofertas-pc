@@ -68,7 +68,8 @@
     "RTX 5050 8GB",
     "Corsair CX550 550W",
     "intel Arc B580 12GB GDDR6 Maxsun Milestone",
-    "Galax GeForce RTX 5060 Ti 8GB"
+    "Galax GeForce RTX 5060 Ti 8GB",
+    "Colorful RTX 5060 8GB"
   ],
   "pecas": [
     {
@@ -694,6 +695,31 @@
         "\\bRTX\\b",
         "\\b5060\\b",
         "\\bTi\\b",
+        "\\b8\\s*GB\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Colorful RTX 5060 8GB",
+      "icone": "📦",
+      "rotulo": "COLORFUL RTX 5060 8GB",
+      "teto": 2850,
+      "piso": 713,
+      "ancora": "Colorful",
+      "tirar": [],
+      "incluir": [
+        "\\bColorful\\b"
+      ],
+      "exigir": [
+        "\\bRTX\\b",
+        "\\b5060\\b",
         "\\b8\\s*GB\\b"
       ],
       "excluir": [
