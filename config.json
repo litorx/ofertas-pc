@@ -61,7 +61,8 @@
     "2x8GB DDR4",
     "DDR4 3200 16GB",
     "memoria ram ddr4",
-    "amd ryzen 7 5700x"
+    "amd ryzen 7 5700x",
+    "Ryzen 5 5600"
   ],
   "pecas": [
     {
@@ -513,6 +514,30 @@
         "\\bryzen\\b",
         "\\b7\\b",
         "\\b5700x\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Ryzen 5 5600",
+      "icone": "📦",
+      "rotulo": "RYZEN 5 5600",
+      "teto": 850,
+      "piso": 213,
+      "ancora": "Ryzen",
+      "tirar": [],
+      "incluir": [
+        "\\bRyzen\\b"
+      ],
+      "exigir": [
+        "\\b5\\b",
+        "\\b5600\\b"
       ],
       "excluir": [
         "pc gamer",
