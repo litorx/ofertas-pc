@@ -258,7 +258,12 @@ if (!fs.existsSync(f)) { console.error('sem data/msgs.json: rode python tg-ler.p
 const { msgs } = JSON.parse(fs.readFileSync(f, 'utf8'));
 const fe = process.env.ESTADO_FILE ? path.resolve(process.env.ESTADO_FILE) : path.join(D, 'enviados.json');
 fs.mkdirSync(path.dirname(fe), { recursive: true });
-let enviados = fs.existsSync(fe) ? JSON.parse(fs.readFileSync(fe, 'utf8')) : {};
+let enviados = {};
+if (fs.existsSync(fe)) {
+  try { enviados = JSON.parse(fs.readFileSync(fe, 'utf8').replace(/^﻿/, '')); }
+  catch (e) { console.error('ERRO: estado ilegível (' + e.message + '). Não envio nada nesta volta, para não repetir avisos.'); process.exit(1); }
+}
+const gravarAtomico = (arq, txt) => { const tmp = arq + '.tmp'; fs.writeFileSync(tmp, txt); fs.renameSync(tmp, arq); };
 if (enviados._destino !== DESTINO) enviados = { _destino: DESTINO }; // destino novo: começa do zero
 const agora = Date.now();
 const chave = (o) => o.peca + '|' + o.preco; // mesma peça + mesmo preço = mesma oferta (grupos repostam)
@@ -298,10 +303,10 @@ async function enviarTelegram(textos) {
       // fila para o WhatsApp: o PC (que tem a sessão do WhatsApp) busca e entrega; a nuvem nunca fala com o WhatsApp
       if (process.env.FILA_FILE) {
         const ff = path.resolve(process.env.FILA_FILE); fs.mkdirSync(path.dirname(ff), { recursive: true });
-        let fila = []; try { fila = JSON.parse(fs.readFileSync(ff, 'utf8')); } catch {}
+        let fila = []; try { fila = JSON.parse(fs.readFileSync(ff, 'utf8').replace(/^﻿/, '')); } catch {}
         fila.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), ts: new Date().toISOString(), textos: msgsWa });
         fila = fila.filter((x) => Date.now() - Date.parse(x.ts) < 6 * 3600 * 1000).slice(-40);
-        fs.writeFileSync(ff, JSON.stringify(fila));
+        gravarAtomico(ff, JSON.stringify(fila));
       }
     } else {
       const arq = path.join(D, 'envio.json');
@@ -315,5 +320,5 @@ async function enviarTelegram(textos) {
   }
   for (const k of Object.keys(enviados)) if (k !== '_destino' && agora - Date.parse(enviados[k]) > 7 * 86400000) delete enviados[k];
   enviados._prod = prodAvisados.slice(-200);
-  fs.writeFileSync(fe, JSON.stringify(enviados, null, 2));
+  gravarAtomico(fe, JSON.stringify(enviados, null, 2));
 })().catch((e) => { console.error('ERRO', e.message || e); process.exit(1); });

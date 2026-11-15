@@ -32,7 +32,10 @@ jobs:
           done
           echo "::warning::não consegui enfileirar a próxima execução"
 
+      # ref: main = a versão MAIS NOVA no momento em que a execução começa (e não a de quando entrou na fila)
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: actions/setup-node@v4
         with:
