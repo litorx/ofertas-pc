@@ -60,7 +60,8 @@
     "kit DDR4 16GB",
     "2x8GB DDR4",
     "DDR4 3200 16GB",
-    "memoria ram ddr4"
+    "memoria ram ddr4",
+    "amd ryzen 7 5700x"
   ],
   "pecas": [
     {
@@ -495,6 +496,31 @@
         "placa.?m[aã]e.*ryzen|ryzen.*placa.?m[aã]e",
         "\\bssd\\b",
         "processador"
+      ]
+    },
+    {
+      "nome": "amd ryzen 7 5700x",
+      "icone": "📦",
+      "rotulo": "AMD RYZEN 7 5700X",
+      "teto": 999,
+      "piso": 250,
+      "ancora": "amd",
+      "tirar": [],
+      "incluir": [
+        "\\bamd\\b"
+      ],
+      "exigir": [
+        "\\bryzen\\b",
+        "\\b7\\b",
+        "\\b5700x\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
       ]
     }
   ]
