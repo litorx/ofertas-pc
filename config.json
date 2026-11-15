@@ -67,7 +67,8 @@
     "RX 7600 8GB",
     "RTX 5050 8GB",
     "Corsair CX550 550W",
-    "intel Arc B580 12GB GDDR6 Maxsun Milestone"
+    "intel Arc B580 12GB GDDR6 Maxsun Milestone",
+    "Galax GeForce RTX 5060 Ti 8GB"
   ],
   "pecas": [
     {
@@ -667,6 +668,33 @@
         "\\bGDDR6\\b",
         "\\bMaxsun\\b",
         "\\bMilestone\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Galax GeForce RTX 5060 Ti 8GB",
+      "icone": "📦",
+      "rotulo": "GALAX GEFORCE RTX 5060 TI 8GB",
+      "teto": 2600,
+      "piso": 650,
+      "ancora": "Galax",
+      "tirar": [],
+      "incluir": [
+        "\\bGalax\\b"
+      ],
+      "exigir": [
+        "\\bGeForce\\b",
+        "\\bRTX\\b",
+        "\\b5060\\b",
+        "\\bTi\\b",
+        "\\b8\\s*GB\\b"
       ],
       "excluir": [
         "pc gamer",
