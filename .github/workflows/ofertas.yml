@@ -1,0 +1,34 @@
+name: ofertas
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # mínimo do GitHub; cada execução repete o ciclo a cada 60 s por ~4m45s
+  workflow_dispatch: {}
+
+permissions:
+  contents: write           # só para guardar o estado das ofertas já enviadas e as mudanças do bot
+
+concurrency:
+  group: ofertas
+  cancel-in-progress: false
+
+jobs:
+  rodar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Ciclo (comandos do bot, leitura dos canais públicos, avisos)
+        env:
+          CANAL: telegram
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          TG_CHATS: ${{ secrets.TG_CHATS }}
+          ESTADO_FILE: estado/enviados-telegram.json
+          FILA_FILE: estado/fila-whatsapp.json
+        run: node ciclo.js

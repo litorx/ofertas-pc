@@ -1,0 +1,501 @@
+{
+  "maxIdadeHoras": 16,
+  "margem": 0.05,
+  "limitePorBusca": 150,
+  "porPeca": 3,
+  "canaisPublicos": [
+    "tecnoarthardware",
+    "mmpromo",
+    "HardTecPromocoes",
+    "peperaiohardware",
+    "OQMDVPROMO",
+    "terabyteshopoficial",
+    "RickPromos"
+  ],
+  "buscas": [
+    "9060 XT",
+    "9060XT",
+    "RX 9060",
+    "Radeon 9060",
+    "4060 Ti",
+    "4060Ti",
+    "RTX 4060 Ti 16GB",
+    "5700X",
+    "5700 X",
+    "Ryzen 7 5700X",
+    "5600X",
+    "5600 X",
+    "Ryzen 5 5600X",
+    "B550M",
+    "B550 M",
+    "B550",
+    "water cooler 360",
+    "watercooler 360",
+    "water cooler branco",
+    "watercooler branco",
+    "water cooler white",
+    "cooler liquido 360",
+    "refrigeração líquida 360",
+    "AIO 360",
+    "liquid cooler 360",
+    "water 360mm",
+    "fonte 750W",
+    "750W",
+    "750 watts",
+    "fonte 80 plus bronze 750W",
+    "fonte 750W 80 plus",
+    "SSD NVMe 2TB",
+    "SSD 2TB",
+    "NVMe 2TB",
+    "SSD NVMe 1TB",
+    "SSD NVMe 512GB",
+    "SSD 1TB",
+    "SSD 512GB",
+    "SSD SATA 480GB",
+    "SSD 480GB",
+    "SSD 960GB",
+    "NVMe 500GB",
+    "memória DDR4 16GB",
+    "RAM DDR4 16GB",
+    "kit DDR4 16GB",
+    "2x8GB DDR4",
+    "DDR4 3200 16GB",
+    "memoria ram ddr4"
+  ],
+  "pecas": [
+    {
+      "nome": "RX 9060 XT 16GB",
+      "icone": "🎮",
+      "rotulo": "PLACA DE VÍDEO · RX 9060 XT 16GB",
+      "teto": 3250,
+      "piso": 2000,
+      "ancora": "placa de v[ií]deo|gpu|radeon|rx\\s*9060",
+      "tirar": [
+        "placa de v[ií]deo",
+        "gpu",
+        "radeon",
+        "amd"
+      ],
+      "incluir": [
+        "9060\\s*-?\\s*xt"
+      ],
+      "exigir": [
+        "16\\s*gb|16\\s*g\\b"
+      ],
+      "excluir": [
+        "\\b8\\s*gb",
+        "notebook",
+        "laptop",
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "kit upgrade",
+        "\\bkit\\b.*(ryzen|placa.?m)"
+      ]
+    },
+    {
+      "nome": "RTX 4060 Ti 16GB",
+      "icone": "🎮",
+      "rotulo": "PLACA DE VÍDEO · RTX 4060 Ti 16GB",
+      "teto": 3250,
+      "piso": 2000,
+      "ancora": "placa de v[ií]deo|gpu|geforce|rtx",
+      "tirar": [
+        "placa de v[ií]deo",
+        "gpu",
+        "geforce",
+        "nvidia"
+      ],
+      "incluir": [
+        "4060\\s*-?\\s*ti"
+      ],
+      "exigir": [
+        "16\\s*gb|16\\s*g\\b"
+      ],
+      "excluir": [
+        "\\b8\\s*gb",
+        "notebook",
+        "laptop",
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "kit upgrade",
+        "\\bkit\\b.*(ryzen|placa.?m)"
+      ]
+    },
+    {
+      "nome": "Ryzen 7 5700X",
+      "icone": "🧠",
+      "rotulo": "PROCESSADOR · Ryzen 7 5700X",
+      "teto": 3001,
+      "piso": 600,
+      "ancora": "processador|cpu|ryzen|amd",
+      "tirar": [
+        "processador",
+        "cpu"
+      ],
+      "incluir": [
+        "5700\\s*-?\\s*x\\b(?!\\s*-?\\s*3d)",
+        "ryzen\\s*7\\s*5700\\s*x\\b(?!\\s*-?\\s*3d)",
+        "\\br7\\s*5700\\s*x\\b(?!\\s*-?\\s*3d)"
+      ],
+      "exigir": [],
+      "excluir": [
+        "x3d",
+        "5700g",
+        "notebook",
+        "laptop",
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "\\bkit\\b"
+      ]
+    },
+    {
+      "nome": "Ryzen 5 5600X",
+      "icone": "🧠",
+      "rotulo": "PROCESSADOR · Ryzen 5 5600X",
+      "teto": 700,
+      "piso": 400,
+      "ancora": "processador|cpu|ryzen|amd",
+      "tirar": [
+        "processador",
+        "cpu"
+      ],
+      "incluir": [
+        "5600\\s*-?\\s*x\\b(?!\\s*-?\\s*3d)",
+        "ryzen\\s*5\\s*5600\\s*x\\b",
+        "\\br5\\s*5600\\s*x\\b"
+      ],
+      "exigir": [],
+      "excluir": [
+        "x3d",
+        "5600g",
+        "5600gt",
+        "notebook",
+        "laptop",
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "\\bkit\\b"
+      ]
+    },
+    {
+      "nome": "Placa-mãe B550 / B550M",
+      "icone": "🔧",
+      "rotulo": "PLACA-MÃE · B550 / B550M",
+      "teto": 600,
+      "piso": 300,
+      "ancora": "placa[- ]?m[aã]e",
+      "tirar": [
+        "placa[- ]?m[aã]e",
+        "placa m[aã]e"
+      ],
+      "incluir": [
+        "b550\\s*-?\\s*m?\\b",
+        "\\bb550"
+      ],
+      "exigir": [],
+      "excluir": [
+        "notebook",
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "\\bkit\\b",
+        "ryzen\\s*\\d\\s*\\d{4}x?\\b.*\\bb550|b550.*ryzen\\s*\\d\\s*\\d{4}"
+      ]
+    },
+    {
+      "nome": "Water cooler 360 branco",
+      "icone": "❄️",
+      "rotulo": "WATER COOLER · 360mm branco",
+      "teto": 290,
+      "piso": 120,
+      "cor": true,
+      "ancora": "water\\s*-?\\s*cooler|watercooler|cooler l[ií]quido|liquid|aio|refrigera",
+      "tirar": [
+        "water\\s*-?\\s*cooler",
+        "watercooler",
+        "cooler l[ií]quido",
+        "gamer"
+      ],
+      "incluir": [
+        "water\\s*-?\\s*cooler|watercooler|\\bwc\\b|cooler\\s+l[ií]quido|liquid\\s*cooler|\\baio\\b|refrigera[cç][aã]o\\s+l[ií]quida|\\bwater\\b.*360|360.*\\bwater\\b|liquid\\s*freezer|masterliquid|elite\\s*liquid|aqua\\s*elite|lightflow"
+      ],
+      "exigir": [
+        "360"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "notebook",
+        "gabinete",
+        "\\bkit\\b.*(ryzen|placa)"
+      ]
+    },
+    {
+      "nome": "Fonte 750W",
+      "icone": "⚡",
+      "rotulo": "FONTE · 750W",
+      "teto": 220,
+      "piso": 100,
+      "ancora": "fonte",
+      "tirar": [
+        "fonte( de alimenta[cç][aã]o| alimenta[cç][aã]o)?",
+        "alimenta[cç][aã]o"
+      ],
+      "incluir": [
+        "\\b750\\s*-?\\s*(w\\b|watts)"
+      ],
+      "exigir": [
+        "fonte|psu|80\\s*plus|bronze|gold|atx"
+      ],
+      "excluir": [
+        "gabinete",
+        "pc gamer",
+        "pc completo",
+        "notebook",
+        "nobreak",
+        "estabilizador",
+        "carregador",
+        "\\bkit\\b"
+      ]
+    },
+    {
+      "nome": "SSD NVMe 1TB",
+      "icone": "💾",
+      "rotulo": "SSD NVMe · 1TB",
+      "teto": 700,
+      "piso": 300,
+      "ancora": "ssd|nvme",
+      "tirar": [
+        "ssd",
+        "nvme",
+        "m\\.?2"
+      ],
+      "incluir": [
+        "nvme|m\\.?2|pcie"
+      ],
+      "exigir": [
+        "\\b1\\s*tb\\b|\\b960\\s*gb\\b|\\b1000\\s*gb\\b",
+        "ssd|nvme"
+      ],
+      "excluir": [
+        "externo",
+        "port[aá]til",
+        "usb",
+        "pendrive",
+        "cart[aã]o",
+        "gaveta",
+        "enclosure",
+        "adaptador",
+        "notebook",
+        "pc gamer",
+        "pc completo",
+        "kit upgrade",
+        "ps5|playstation|xbox|console",
+        "\\b[24]\\s*tb\\b",
+        "\\b256\\s*gb\\b",
+        "dissipador|heatsink",
+        "m\\.?2\\s*sata|sata\\s*m\\.?2"
+      ]
+    },
+    {
+      "nome": "SSD NVMe 2TB",
+      "icone": "💾",
+      "rotulo": "SSD NVMe · 2TB",
+      "teto": 1700,
+      "piso": 600,
+      "ancora": "ssd|nvme",
+      "tirar": [
+        "ssd",
+        "nvme",
+        "m\\.?2"
+      ],
+      "incluir": [
+        "nvme|m\\.?2|pcie"
+      ],
+      "exigir": [
+        "\\b2\\s*tb\\b|\\b2000\\s*gb\\b",
+        "ssd|nvme"
+      ],
+      "excluir": [
+        "externo",
+        "port[aá]til",
+        "usb",
+        "pendrive",
+        "cart[aã]o",
+        "gaveta",
+        "enclosure",
+        "adaptador",
+        "notebook",
+        "pc gamer",
+        "pc completo",
+        "kit upgrade",
+        "ps5|playstation|xbox|console",
+        "\\b4\\s*tb\\b",
+        "dissipador|heatsink",
+        "m\\.?2\\s*sata|sata\\s*m\\.?2"
+      ]
+    },
+    {
+      "nome": "SSD NVMe 512GB",
+      "icone": "💾",
+      "rotulo": "SSD NVMe · 512GB",
+      "teto": 340,
+      "piso": 150,
+      "ancora": "ssd|nvme",
+      "tirar": [
+        "ssd",
+        "nvme",
+        "m\\.?2"
+      ],
+      "incluir": [
+        "nvme|m\\.?2|pcie"
+      ],
+      "exigir": [
+        "\\b(480|500|512)\\s*gb\\b",
+        "ssd|nvme"
+      ],
+      "excluir": [
+        "externo",
+        "port[aá]til",
+        "usb",
+        "pendrive",
+        "cart[aã]o",
+        "gaveta",
+        "enclosure",
+        "adaptador",
+        "notebook",
+        "pc gamer",
+        "pc completo",
+        "kit upgrade",
+        "ps5|playstation|xbox|console",
+        "\\b[24]\\s*tb\\b",
+        "\\b1\\s*tb\\b",
+        "\\b256\\s*gb\\b",
+        "dissipador|heatsink",
+        "m\\.?2\\s*sata|sata\\s*m\\.?2"
+      ]
+    },
+    {
+      "nome": "SSD SATA 1TB",
+      "icone": "💽",
+      "rotulo": "SSD SATA · 1TB",
+      "teto": 550,
+      "piso": 250,
+      "ancora": "ssd",
+      "tirar": [
+        "ssd",
+        "sata( iii)?",
+        "2\\.5\\W*"
+      ],
+      "incluir": [
+        "\\bssd\\b"
+      ],
+      "exigir": [
+        "\\b1\\s*tb\\b|\\b960\\s*gb\\b|\\b1000\\s*gb\\b"
+      ],
+      "excluir": [
+        "nvme",
+        "m\\.?2",
+        "pcie",
+        "externo",
+        "port[aá]til",
+        "usb",
+        "pendrive",
+        "cart[aã]o",
+        "gaveta",
+        "enclosure",
+        "adaptador",
+        "notebook",
+        "pc gamer",
+        "pc completo",
+        "kit upgrade",
+        "ps5|playstation|xbox|console",
+        "\\b[24]\\s*tb\\b",
+        "dissipador|heatsink"
+      ]
+    },
+    {
+      "nome": "SSD SATA 512GB",
+      "icone": "💽",
+      "rotulo": "SSD SATA · 512GB",
+      "teto": 280,
+      "piso": 120,
+      "ancora": "ssd",
+      "tirar": [
+        "ssd",
+        "sata( iii)?",
+        "2\\.5\\W*"
+      ],
+      "incluir": [
+        "\\bssd\\b"
+      ],
+      "exigir": [
+        "\\b(480|500|512)\\s*gb\\b"
+      ],
+      "excluir": [
+        "nvme",
+        "m\\.?2",
+        "pcie",
+        "externo",
+        "port[aá]til",
+        "usb",
+        "pendrive",
+        "cart[aã]o",
+        "gaveta",
+        "enclosure",
+        "adaptador",
+        "notebook",
+        "pc gamer",
+        "pc completo",
+        "kit upgrade",
+        "ps5|playstation|xbox|console",
+        "\\b[24]\\s*tb\\b",
+        "\\b1\\s*tb\\b",
+        "\\b256\\s*gb\\b",
+        "dissipador|heatsink"
+      ]
+    },
+    {
+      "nome": "RAM DDR4 16GB",
+      "icone": "🧩",
+      "rotulo": "MEMÓRIA RAM · DDR4 16GB (PC)",
+      "teto": 350,
+      "piso": 100,
+      "ancora": "mem[oó]ria|ram|kit",
+      "tirar": [
+        "mem[oó]ria( ram)?",
+        "ram",
+        "kit",
+        "desktop"
+      ],
+      "incluir": [
+        "ddr4"
+      ],
+      "exigir": [
+        "\\b16\\s*gb\\b|\\b2\\s*x\\s*8\\s*gb\\b|\\b2x8\\b",
+        "mem[oó]ria|ram|ddr4"
+      ],
+      "excluir": [
+        "ddr5",
+        "ddr3",
+        "so-?dimm",
+        "notebook",
+        "laptop",
+        "servidor",
+        "ecc",
+        "\\b32\\s*gb",
+        "\\b2\\s*x\\s*16",
+        "\\b4\\s*x\\s*8",
+        "pc gamer",
+        "pc completo",
+        "kit upgrade",
+        "placa.?m[aã]e.*ryzen|ryzen.*placa.?m[aã]e",
+        "\\bssd\\b",
+        "processador"
+      ]
+    }
+  ]
+}

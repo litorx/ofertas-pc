@@ -1,0 +1,14 @@
+# LISTA DE PERMISSAO: tudo e ignorado, exceto o que esta liberado abaixo.
+# Assim nenhum segredo, sessao ou dado pessoal entra no Git por acidente.
+*
+!*/
+!.gitignore
+!README.md
+!config.json
+!web-ler.js
+!ofertas.js
+!bot.js
+!ciclo.js
+!carregar-config.js
+!.github/workflows/ofertas.yml
+!estado/*.json
