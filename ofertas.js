@@ -150,6 +150,21 @@ function mensagens(lista) {
   return out;
 }
 
+// ---- promo repetida: mesmo produto (nome parecido) na mesma peça, com preço quase igual (±5%) ----
+// Os canais repostam uns dos outros com centavos de diferença (R$ 268 / 269 / 271): isso é UMA promo, não três.
+const semAcento = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const GENERICAS = new Set(['de', 'da', 'do', 'dos', 'das', 'com', 'para', 'por', 'sem', 'em', 'um', 'uma', 'amd', 'intel', 'gamer', 'gaming', 'preto', 'branco', 'black', 'white', 'am4', 'ddr4', 'mini', 'micro', 'atx', 'matx', 'kit', 'novo', 'nova']);
+const tokensProduto = (nome) => [...new Set(semAcento(nome).replace(/[^a-z0-9]+/g, ' ').split(' ').filter((t) => t.length > 1 && !GENERICAS.has(t)))];
+const jaccard = (a, b) => { const B = new Set(b); const i = a.filter((x) => B.has(x)).length; return i / ((a.length + b.length - i) || 1); };
+const repetida = (o, vistos) => { const tk = tokensProduto(o.nome); return vistos.some((v) => v.pc === o.peca && Math.abs(v.p - o.preco) / v.p <= 0.05 && jaccard(v.tk, tk) >= 0.6); };
+const registro = (o, t) => ({ pc: o.peca, p: o.preco, tk: tokensProduto(o.nome), t });
+// da lista (já ordenada do mais barato ao mais caro) fica só uma por produto, e nenhuma que já foi avisada
+function unicos(lista, jaAvisados) {
+  const aceitos = [];
+  for (const o of lista) { if (repetida(o, jaAvisados) || repetida(o, aceitos.map((x) => registro(x)))) continue; aceitos.push(o); }
+  return aceitos;
+}
+
 if (process.argv.includes('--teste')) {
   // os testes usam tetos fixos, para não quebrarem quando você muda um teto pelo bot
   const FIXOS = { 'RX 9060 XT 16GB': 3250, 'RTX 4060 Ti 16GB': 3000, 'Ryzen 7 5700X': 950, 'Ryzen 5 5600X': 700, 'Placa-mãe B550 / B550M': 600, 'Water cooler 360 branco': 290, 'Fonte 750W': 220, 'SSD NVMe 2TB': 1700, 'SSD NVMe 1TB': 700, 'SSD NVMe 512GB': 340, 'SSD SATA 1TB': 550, 'SSD SATA 512GB': 280, 'RAM DDR4 16GB': 350 };
@@ -221,8 +236,21 @@ if (process.argv.includes('--teste')) {
   // cupom
   const c1 = cupom('Placa Mae R$ 574 com cupom: C0RR1D411D011 ✅ Link'), c2 = cupom('Fonte R$ 297 🎟️ Cupom para cliente Meli+: MELIMAIS1411'), c3 = cupom('SSD 1TB R$ 599 no PIX'), c4 = cupom('R$ 99 use o cupom no app');
   const okc = c1.codigos[0] === 'C0RR1D411D011' && c2.codigos[0] === 'MELIMAIS1411' && c2.notas.includes('exclusivo Meli+') && !c3.temPalavra && c4.temPalavra && !c4.codigos.length;
-  console.log(ok + '/' + T.length + ' casos de filtro ok · cupom ' + (okc ? 'ok' : 'FALHOU'));
-  process.exit(ok === T.length && okc ? 0 : 1);
+  // repetição: mesma promo repostada com centavos de diferença = 1 aviso; produto diferente ou queda grande = avisa
+  const O = (peca, nome, preco) => ({ peca, nome, preco });
+  const ja = [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271))];
+  const rep = [
+    ['mesmo produto, preço -1%', unicos([O('SSD SATA 512GB', '3 Netac 512GB', 268)], ja).length === 0],
+    ['mesmo produto, preço +1%', unicos([O('SSD SATA 512GB', '3 Netac 512GB', 273)], ja).length === 0],
+    ['mesmo produto, queda de 15%', unicos([O('SSD SATA 512GB', '3 Netac 512GB', 230)], ja).length === 1],
+    ['produto diferente, mesmo preço', unicos([O('SSD SATA 512GB', 'Kingston A400 480GB', 270)], ja).length === 1],
+    ['outra peça, mesmo nome', unicos([O('SSD NVMe 512GB', '3 Netac 512GB', 271)], ja).length === 1],
+    ['3 repostagens na mesma rodada viram 1', unicos([O('Ryzen 7 5700X', 'Ryzen 7 5700x Oem Sem Cooler', 884), O('Ryzen 7 5700X', 'Ryzen 7 5700x Oem', 888), O('Ryzen 7 5700X', 'Processador Ryzen 7 5700X OEM', 890)], []).length === 1],
+    ['nomes diferentes na mesma rodada ficam', unicos([O('Placa-mãe B550 / B550M', 'MSI B550M Gaming Plus WiFi6E', 572), O('Placa-mãe B550 / B550M', 'Pichau Chronos B550M-CR', 574)], []).length === 2],
+  ];
+  let okr = 0; rep.forEach(([n, c]) => { if (c) okr++; else console.log('FALHOU (repetição):', n); });
+  console.log(ok + '/' + T.length + ' casos de filtro ok · cupom ' + (okc ? 'ok' : 'FALHOU') + ' · repetição ' + okr + '/' + rep.length);
+  process.exit(ok === T.length && okc && okr === rep.length ? 0 : 1);
 }
 
 const f = path.join(D, 'msgs.json');
@@ -235,10 +263,12 @@ if (enviados._destino !== DESTINO) enviados = { _destino: DESTINO }; // destino 
 const agora = Date.now();
 const chave = (o) => o.peca + '|' + o.preco; // mesma peça + mesmo preço = mesma oferta (grupos repostam)
 const vistos = new Set();
-const achados = msgs.map((m) => avaliar(m, agora)).filter(Boolean)
+const prodAvisados = (enviados._prod || []).filter((v) => agora - Date.parse(v.t) < 48 * 3600 * 1000); // produtos avisados nas últimas 48h
+const candidatos = msgs.map((m) => avaliar(m, agora)).filter(Boolean)
   .sort((a, b) => a.idade - b.idade)
   .filter((o) => { const k = chave(o); if (enviados[k] || vistos.has(k)) return false; vistos.add(k); return true; })
   .sort((a, b) => a.preco - b.preco);
+const achados = unicos(candidatos, prodAvisados); // tira repostagens do mesmo produto com centavos de diferença
 console.log(msgs.length + ' mensagens lidas, ' + achados.length + ' ofertas novas únicas (<= ' + cfg.maxIdadeHoras + 'h)');
 const msgsWa = achados.length ? mensagens(achados) : [];
 if (dry) { console.log(msgsWa.length ? '\n' + msgsWa.join('\n\n======== (próxima mensagem) ========\n\n') : '(nada novo)'); process.exit(0); }
@@ -281,7 +311,9 @@ async function enviarTelegram(textos) {
     }
     const ts = new Date().toISOString();
     achados.forEach((o) => { enviados[chave(o)] = ts; }); // só marca como enviado depois do envio dar certo
+    prodAvisados.push(...achados.map((o) => registro(o, ts)));
   }
   for (const k of Object.keys(enviados)) if (k !== '_destino' && agora - Date.parse(enviados[k]) > 7 * 86400000) delete enviados[k];
+  enviados._prod = prodAvisados.slice(-200);
   fs.writeFileSync(fe, JSON.stringify(enviados, null, 2));
 })().catch((e) => { console.error('ERRO', e.message || e); process.exit(1); });
