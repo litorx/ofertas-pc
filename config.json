@@ -66,7 +66,8 @@
     "8 GB DDR4-3200",
     "RX 7600 8GB",
     "RTX 5050 8GB",
-    "Corsair CX550 550W"
+    "Corsair CX550 550W",
+    "intel Arc B580 12GB GDDR6 Maxsun Milestone"
   ],
   "pecas": [
     {
@@ -638,6 +639,34 @@
       "exigir": [
         "\\bCX550\\b",
         "\\b550\\s*W\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "intel Arc B580 12GB GDDR6 Maxsun Milestone",
+      "icone": "📦",
+      "rotulo": "INTEL ARC B580 12GB GDDR6 MAXSUN MILESTONE",
+      "teto": 2400,
+      "piso": 600,
+      "ancora": "intel",
+      "tirar": [],
+      "incluir": [
+        "\\bintel\\b"
+      ],
+      "exigir": [
+        "\\bArc\\b",
+        "\\bB580\\b",
+        "\\b12\\s*GB\\b",
+        "\\bGDDR6\\b",
+        "\\bMaxsun\\b",
+        "\\bMilestone\\b"
       ],
       "excluir": [
         "pc gamer",
