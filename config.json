@@ -62,7 +62,8 @@
     "DDR4 3200 16GB",
     "memoria ram ddr4",
     "amd ryzen 7 5700x",
-    "Ryzen 5 5600"
+    "Ryzen 5 5600",
+    "8 GB DDR4-3200"
   ],
   "pecas": [
     {
@@ -538,6 +539,30 @@
       "exigir": [
         "\\b5\\b",
         "\\b5600\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "8 GB DDR4-3200",
+      "icone": "📦",
+      "rotulo": "8 GB DDR4-3200",
+      "teto": 310,
+      "piso": 78,
+      "ancora": "8",
+      "tirar": [],
+      "incluir": [
+        "\\b8\\b"
+      ],
+      "exigir": [
+        "\\bGB\\b",
+        "\\bDDR4-3200\\b"
       ],
       "excluir": [
         "pc gamer",
