@@ -22,11 +22,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ativos=0
-          for st in in_progress queued; do
-            n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ofertas.yml --status "$st" --json databaseId --jq 'length')
-            ativos=$((ativos + n))
-          done
+          # conta tudo que não está concluído (in_progress, queued, pending, waiting...)
+          ativos=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ofertas.yml/runs?per_page=10" \
+            --jq '[.workflow_runs[] | select(.status != "completed")] | length')
           echo "execuções ativas/na fila: $ativos"
           if [ "$ativos" -eq 0 ]; then
             echo "corrente parada: recomeçando"
