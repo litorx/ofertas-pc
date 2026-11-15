@@ -32,7 +32,7 @@ function fundirFila(remoto, local) {
 }
 
 // ---- trazer o estado mais novo (início de cada volta) ----
-function atualizar(dir) {
+function atualizar(dir = process.cwd()) {
   git(['fetch', '-q', 'origin', 'main'], dir);
   const adiante = Number((git(['rev-list', '--count', 'origin/main..HEAD'], dir).stdout || '0').trim());
   const sujo = (git(['status', '--porcelain', '--', ...ARQ], dir).stdout || '').trim();
@@ -40,7 +40,7 @@ function atualizar(dir) {
 }
 
 // ---- guardar o estado: junta o nosso com o do remoto e envia (tenta de novo se alguém empurrou no meio) ----
-function guardarEstado(dir) {
+function guardarEstado(dir = process.cwd()) {
   for (let t = 0; t < 4; t++) {
     const local = ARQ.map((f) => lerArq(dir, f));
     git(['fetch', '-q', 'origin', 'main'], dir);
@@ -96,6 +96,16 @@ function teste() {
     ['sem marca de conflito no JSON', !/<<<<<<<|>>>>>>>|=======/.test(bruto)],
     ['atualizar() traz o estado novo', (() => { atualizar(D); return !!(lerJson(lerArq(D, ARQ[0])) || {})['Fonte|229']; })()],
   ];
+  // como a nuvem chama: SEM argumento, dentro da pasta do repositório (foi o que quebrou na 1ª versão)
+  const E = clonar('e'); const antes = process.cwd(); process.chdir(E);
+  let semArg = false;
+  try {
+    atualizar();
+    fs.writeFileSync(path.join(E, ARQ[0]), JSON.stringify({ _destino: 'x', 'Novo|1': agora, _prod: [] }));
+    semArg = guardarEstado() === true && !!(lerJson(git(['show', 'origin/main:' + ARQ[0]], E).stdout) || {})['Novo|1'];
+  } catch (e) { console.log('erro sem argumento:', e.message); }
+  process.chdir(antes);
+  casos.push(['atualizar()/guardarEstado() sem argumento (como na nuvem)', semArg]);
   let ok = 0; casos.forEach(([n, c]) => { if (c) ok++; else console.log('FALHOU:', n); });
   console.log(ok + '/' + casos.length + ' testes do ciclo ok');
   try { fs.rmSync(base, { recursive: true, force: true }); } catch {}
