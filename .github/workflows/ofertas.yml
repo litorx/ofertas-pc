@@ -6,7 +6,8 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write           # só para guardar o estado das ofertas já enviadas e as mudanças do bot
+  contents: write           # guardar o estado das ofertas já enviadas e as mudanças do bot
+  actions: write            # disparar a próxima execução (corrente sem depender do agendamento)
 
 concurrency:
   group: ofertas
@@ -32,3 +33,11 @@ jobs:
           ESTADO_FILE: estado/enviados-telegram.json
           FILA_FILE: estado/fila-whatsapp.json
         run: node ciclo.js
+
+      # Corrente: ao terminar bem, dispara a próxima execução. O cron acima é só rede de segurança
+      # (se algo falhar, o agendamento retoma). A fila de 'concurrency' evita execuções sobrepostas.
+      - name: Disparar a próxima execução
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ofertas.yml --repo ${{ github.repository }}
