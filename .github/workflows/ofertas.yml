@@ -2,13 +2,14 @@ name: ofertas
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # mínimo do GitHub; cada execução repete o ciclo a cada 60 s por ~4m45s
+    - cron: "*/5 * * * *"   # rede de segurança (o GitHub atrasa/pula agendamentos); a corrente abaixo é o motor
   workflow_dispatch: {}
 
 permissions:
   contents: write           # guardar o estado das ofertas já enviadas e as mudanças do bot
-  actions: write            # disparar a próxima execução (corrente sem depender do agendamento)
+  actions: write            # criar o próximo elo da corrente
 
+# Só uma execução por vez e UMA na fila. Quando a atual termina, a que está na fila começa.
 concurrency:
   group: ofertas
   cancel-in-progress: false
@@ -18,6 +19,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
+      # 1) PRIMEIRO passo, antes de qualquer outra coisa: já deixa o PRÓXIMO elo na fila.
+      #    Assim a corrente não depende do fim desta execução: se ela travar, falhar ou o servidor sumir,
+      #    o sucessor já existe e começa assim que esta acabar (ou for dada como perdida).
+      - name: Deixar a próxima execução na fila
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in 1 2 3 4 5; do
+            gh workflow run ofertas.yml --repo "$GITHUB_REPOSITORY" && exit 0
+            sleep $((i * 3))
+          done
+          echo "::warning::não consegui enfileirar a próxima execução"
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -33,11 +47,3 @@ jobs:
           ESTADO_FILE: estado/enviados-telegram.json
           FILA_FILE: estado/fila-whatsapp.json
         run: node ciclo.js
-
-      # Corrente: ao terminar bem, dispara a próxima execução. O cron acima é só rede de segurança
-      # (se algo falhar, o agendamento retoma). A fila de 'concurrency' evita execuções sobrepostas.
-      - name: Disparar a próxima execução
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run ofertas.yml --repo ${{ github.repository }}

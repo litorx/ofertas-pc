@@ -1,0 +1,34 @@
+name: vigia
+
+# Segunda camada: se por algum motivo não houver NENHUMA execução rodando nem na fila, recria a corrente.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  actions: write
+
+concurrency:
+  group: vigia
+  cancel-in-progress: false
+
+jobs:
+  vigiar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Há execução rodando ou na fila? Se não, recomeça a corrente
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ativos=0
+          for st in in_progress queued; do
+            n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ofertas.yml --status "$st" --json databaseId --jq 'length')
+            ativos=$((ativos + n))
+          done
+          echo "execuções ativas/na fila: $ativos"
+          if [ "$ativos" -eq 0 ]; then
+            echo "corrente parada: recomeçando"
+            gh workflow run ofertas.yml --repo "$GITHUB_REPOSITORY"
+          fi

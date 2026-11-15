@@ -11,4 +11,5 @@
 !ciclo.js
 !carregar-config.js
 !.github/workflows/ofertas.yml
+!.github/workflows/vigia.yml
 !estado/*.json
