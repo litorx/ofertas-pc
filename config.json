@@ -69,7 +69,8 @@
     "Corsair CX550 550W",
     "intel Arc B580 12GB GDDR6 Maxsun Milestone",
     "Galax GeForce RTX 5060 Ti 8GB",
-    "Colorful RTX 5060 8GB"
+    "Colorful RTX 5060 8GB",
+    "Ryzen 7 5700X3D"
   ],
   "pecas": [
     {
@@ -721,6 +722,30 @@
         "\\bRTX\\b",
         "\\b5060\\b",
         "\\b8\\s*GB\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Ryzen 7 5700X3D",
+      "icone": "📦",
+      "rotulo": "RYZEN 7 5700X3D",
+      "teto": 1000,
+      "piso": 250,
+      "ancora": "Ryzen",
+      "tirar": [],
+      "incluir": [
+        "\\bRyzen\\b"
+      ],
+      "exigir": [
+        "\\b7\\b",
+        "\\b5700X3D\\b"
       ],
       "excluir": [
         "pc gamer",
