@@ -136,7 +136,7 @@
       "nome": "Ryzen 7 5700X",
       "icone": "🧠",
       "rotulo": "PROCESSADOR · Ryzen 7 5700X",
-      "teto": 3001,
+      "teto": 950,
       "piso": 600,
       "ancora": "processador|cpu|ryzen|amd",
       "tirar": [
