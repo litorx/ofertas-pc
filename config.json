@@ -70,7 +70,8 @@
     "intel Arc B580 12GB GDDR6 Maxsun Milestone",
     "Galax GeForce RTX 5060 Ti 8GB",
     "Colorful RTX 5060 8GB",
-    "Ryzen 7 5700X3D"
+    "Ryzen 7 5700X3D",
+    "i5-12600K"
   ],
   "pecas": [
     {
@@ -747,6 +748,27 @@
         "\\b7\\b",
         "\\b5700X3D\\b"
       ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "i5-12600K",
+      "icone": "📦",
+      "rotulo": "I5-12600K",
+      "teto": 900,
+      "piso": 225,
+      "ancora": "i5-12600K",
+      "tirar": [],
+      "incluir": [
+        "\\bi5-12600K\\b"
+      ],
+      "exigir": [],
       "excluir": [
         "pc gamer",
         "pc completo",
