@@ -30,26 +30,71 @@ function precos(t) {
 }
 
 // ---- cupom e condições ----
-const NAO_CODIGO = new Set(['CUPOM', 'CLIENTE', 'MOEDAS', 'PIX', 'APP', 'LINK', 'PARA', 'COM', 'MELI', 'USE', 'ATE']);
+const NAO_CODIGO = new Set(['CUPOM', 'CUPONS', 'CLIENTE', 'MOEDAS', 'PIX', 'APP', 'LINK', 'PARA', 'COM', 'MELI', 'USE', 'ATE', 'ANUNCIO', 'SELECIONADOS', 'RESGATE', 'PAGINA', 'TODOS', 'DESTA', 'VALIDO']);
+
+// Cada link do post com o RÓTULO escrito perto dele: na mesma linha ("Link PC: https://...") ou, se o link está sozinho
+// na linha, na linha de cima ("Resgate todos os cupons desta página:" / "Link do produto:").
+// tipo: 'cupom' (página/link para resgatar cupom), 'pc', 'app' ou 'neutro'.
+const TEM_PALAVRA = /[a-zà-ú]{3}/i;
+function linksDoPost(t) {
+  const out = []; const re = /https?:\/\/[^\s)>\]"']+/g; let m; let fimAnterior = 0;
+  while ((m = re.exec(t))) {
+    const url = m[0].replace(/[.,;:!?]+$/, '');
+    const ini = t.lastIndexOf('\n', m.index - 1) + 1;
+    let rot = t.slice(Math.max(ini, fimAnterior), m.index); // só o texto desde o link anterior (dois links na mesma linha)
+    fimAnterior = m.index + m[0].length;
+    if (!TEM_PALAVRA.test(rot)) { // só emoji/nada antes do link: vale a linha de cima
+      const acima = t.slice(0, Math.max(0, ini - 1)).split('\n').reverse().find((l) => TEM_PALAVRA.test(l));
+      if (acima) rot = acima;
+    }
+    rot = rot.toLowerCase();
+    const cupomPag = /(resgat\w*|ative|pegue|colet\w*|acesse|clique)[^\n]{0,40}(cupom|cupons)|(cupom|cupons)\s+(desta|dessa|da)\s+p[aá]gina|p[aá]gina\s+de\s+cupons?|resgate\s+aqui/.test(rot);
+    const pc = /\bpc\b|computador|desktop|navegador|\bsite\b/.test(rot);
+    const app = /\bapp\b|aplicativo|celular|mobile/.test(rot);
+    out.push({ url, tipo: cupomPag ? 'cupom' : pc ? 'pc' : app ? 'app' : 'neutro' });
+  }
+  return out;
+}
+
 function cupom(t) {
   const codigos = new Set();
+  const semUrl = t.replace(/https?:\/\/\S+/g, ' '); // não procurar "código" dentro de link
+  const pegar = (s) => (s.match(/\b(?=[A-Z0-9]*[A-Z])[A-Z0-9]{5,24}\b/g) || []).forEach((c) => { if (!NAO_CODIGO.has(c)) codigos.add(c); });
   const re = /cupom[^\n]{0,120}/gi; let m;
-  while ((m = re.exec(t))) {
-    (m[0].match(/\b(?=[A-Z0-9]*[A-Z])[A-Z0-9]{5,24}\b/g) || []).forEach((c) => { if (!NAO_CODIGO.has(c)) codigos.add(c); });
+  while ((m = re.exec(semUrl))) {
+    pegar(m[0]);
+    if (/[:：]\s*$/.test(m[0])) { const prox = semUrl.slice(re.lastIndex).match(/^\n[ \t]*([^\n]{0,60})/); if (prox) pegar(prox[1]); } // "Use o cupom:\nABC123"
   }
   const temPalavra = /cupom|c[oó]digo promocional/i.test(t);
+  const link = (linksDoPost(t).find((l) => l.tipo === 'cupom') || {}).url || '';
+  const noAnuncio = /cupom[^\n]{0,40}\ban[uú]ncio|an[uú]ncio[^\n]{0,30}cupom/i.test(t);
+  let valor = ''; // "R$ 100 OFF", "15% off"...
+  for (const l of t.split('\n')) { if (!/cupom|resgat/i.test(l)) continue; const v = /(R\$\s?\d[\d.,]*\s*off|\d+\s*%\s*off|\d+\s*off)/i.exec(l); if (v) { valor = v[1].replace(/\s+/g, ' ').toUpperCase(); break; } }
   const notas = [];
   if (/meli\s*\+|meli\s*mais/i.test(t)) notas.push('exclusivo Meli+');
   if (/moedas/i.test(t)) notas.push('usa moedas do app');
   if (/no app|link app|pelo app|só no app|somente no app/i.test(t) && !/link pc/i.test(t)) notas.push('preço no app');
   if (/pix/i.test(t)) notas.push('preço no Pix');
   if (/primeira compra|novo usu[aá]rio|novos usu[aá]rios/i.test(t)) notas.push('só para 1ª compra');
-  return { codigos: [...codigos], temPalavra, notas };
+  return { codigos: [...codigos], temPalavra, notas, link, noAnuncio, valor };
 }
-function linhaCupom(c) {
-  if (c.codigos.length) return '🎟️ *Cupom:* ' + c.codigos.map((x) => '`' + x + '`').join(' ou ');
-  if (c.temPalavra) return '🎟️ *Precisa de cupom* (código não está no post, confira no link)';
-  return ''; // sem cupom: não fala nada
+// Como USAR o cupom: o código, o link para resgatar (em linha própria) ou o aviso de que está no anúncio.
+function linhaCupom(c, linkDeCompra) {
+  const L = [];
+  if (c.codigos.length) L.push('🎟️ *Cupom:* ' + c.codigos.map((x) => '`' + x + '`').join(' ou '));
+  if (c.link && c.link === linkDeCompra) { // ex.: Shopee Live: o mesmo link resgata o cupom e compra
+    L.push('🎟️ *Cupom' + (c.valor ? ' de ' + c.valor : '') + ':* ' + (c.codigos.length ? 'também vale' : 'vale') + ' pelo link de compra abaixo');
+  } else if (c.link) { L.push('🎟️ *' + (c.codigos.length ? 'Resgatar o cupom' : 'Cupom' + (c.valor ? ' de ' + c.valor : '')) + ':* resgate neste link'); L.push(c.link); }
+  else if (!c.codigos.length && c.noAnuncio) L.push('🎟️ *Cupom no anúncio*' + (c.valor ? ' (' + c.valor + ')' : '') + ': ative na página do produto');
+  else if (!c.codigos.length && c.temPalavra) L.push('🎟️ *Precisa de cupom* (o código não veio no post, confira na página do produto)');
+  return L.join('\n'); // sem cupom: vazio, não fala nada
+}
+// Quanto abaixo do teto está o preço: 🟢 pouco · 🟡 médio · 🔴 muito (limites em config.faixasTeto, % )
+function faixaTeto(preco, teto) {
+  const f = cfg.faixasTeto || {}; const amarelo = f.amarelo ?? 10, vermelho = f.vermelho ?? 20;
+  const pct = Math.round(((teto - preco) / teto) * 100);
+  if (pct <= 0) return '🟢 no teto';
+  return (pct < amarelo ? '🟢' : pct < vermelho ? '🟡' : '🔴') + ' ' + pct + '% abaixo do teto';
 }
 
 function loja(o) {
@@ -62,6 +107,17 @@ function loja(o) {
   if (/shopee/.test(s)) return 'Shopee';
   if (/aliexpress/.test(s)) return 'AliExpress';
   return '';
+}
+
+// Link de compra: SEMPRE o que funciona no PC. Muitos posts trazem dois ("Link APP: ..." e "Link PC: ..."); o do app só
+// abre no celular, o do PC abre nos dois. Lê o rótulo escrito antes de cada link e escolhe: PC > sem rótulo > APP.
+// Nunca escolhe o link de CUPONS (Shopee: "Resgate todos os cupons desta página") como link de compra.
+function linkCompra(o) {
+  const achados = linksDoPost(o.m.texto || '');
+  for (const u of o.m.links || []) if (!achados.some((a) => a.url === u)) achados.push({ url: u, tipo: 'neutro' }); // só vieram no botão/atributo
+  const util = achados.filter((a) => !/t\.me\//i.test(a.url) && a.tipo !== 'cupom'); // t.me = bot/canal; 'cupom' = página de cupons
+  const por = (tipo) => util.find((a) => a.tipo === tipo);
+  return (por('pc') || por('neutro') || por('app') || {}).url || o.m.url || '';
 }
 
 // nome curto do produto: tira emoji, link, preço, a palavra genérica da categoria e corta em ~48 caracteres
@@ -123,13 +179,13 @@ const idadeTxt = (h) => h < 1 ? Math.max(1, Math.round(h * 60)) + ' min' : h < 2
 function secao(p, lista) {
   const L = ['━━━━━━━━━━━━━━', p.icone + ' *' + p.rotulo + '*', '━━━━━━━━━━━━━━', ''];
   lista.forEach((o, i) => {
-    const link = o.m.links.find((u) => !/t\.me\//i.test(u)) || o.m.url || o.m.links[0] || '';
+    const link = linkCompra(o);
     const l = loja(o);
-    L.push('*' + (i + 1) + ')* 💰 *' + real(o.preco) + '*');
+    L.push('*' + (i + 1) + ')* 💰 *' + real(o.preco) + '*  ' + faixaTeto(o.preco, o.teto));
     L.push('📦 ' + o.nome);
     if (o.cor) L.push(o.cor);
     o.extra.forEach((e) => L.push(e));
-    const lc = linhaCupom(o.cupom); if (lc) L.push(lc);
+    const lc = linhaCupom(o.cupom, link); if (lc) L.push(lc);
     if (o.cupom.notas.length) L.push('ℹ️ ' + o.cupom.notas.join(' · '));
     L.push('🕒 Há ' + idadeTxt(o.idade) + (l ? ' · 🏪 ' + l : ''));
     L.push('');
@@ -236,6 +292,45 @@ if (process.argv.includes('--teste')) {
   // cupom
   const c1 = cupom('Placa Mae R$ 574 com cupom: C0RR1D411D011 ✅ Link'), c2 = cupom('Fonte R$ 297 🎟️ Cupom para cliente Meli+: MELIMAIS1411'), c3 = cupom('SSD 1TB R$ 599 no PIX'), c4 = cupom('R$ 99 use o cupom no app');
   const okc = c1.codigos[0] === 'C0RR1D411D011' && c2.codigos[0] === 'MELIMAIS1411' && c2.notas.includes('exclusivo Meli+') && !c3.temPalavra && c4.temPalavra && !c4.codigos.length;
+  // links: sempre o do PC (o do app só abre no celular)
+  const L = (texto, links, url) => linkCompra({ m: { texto, links: links || [], url: url || '' } });
+  const lk = [
+    ['PC depois do APP (TecnoArt)', L('🔥 Ryzen 5 5600x R$ 745 🔗 Link APP: https://a.aliexpress.com/_AAA 🔗 Link PC: https://a.aliexpress.com/_BBB ⚡SE LIGA', ['https://a.aliexpress.com/_AAA', 'https://a.aliexpress.com/_BBB']) === 'https://a.aliexpress.com/_BBB'],
+    ['PC antes do APP', L('Link PC: https://a.aliexpress.com/_PC\nLink APP: https://a.aliexpress.com/_APP') === 'https://a.aliexpress.com/_PC'],
+    ['PC em linhas separadas', L('SSD 1TB R$ 599\n📱 Link APP: https://s.click.aliexpress.com/e/_app\n💻 Link PC: https://s.click.aliexpress.com/e/_pc\n') === 'https://s.click.aliexpress.com/e/_pc'],
+    ['link único sem rótulo', L('Fonte R$ 229 Link do produto: https://www.amazon.com.br/dp/B0H635249V') === 'https://www.amazon.com.br/dp/B0H635249V'],
+    ['só APP: usa o que tem', L('Oferta Link APP: https://a.aliexpress.com/_so') === 'https://a.aliexpress.com/_so'],
+    ['ignora o bot do t.me', L('Link do produto: https://meli.la/abc 🔔 BOT: https://t.me/alertadaspromobot') === 'https://meli.la/abc'],
+    ['sem rótulo vence o APP', L('Link APP: https://a.aliexpress.com/_app Comprar: https://www.kabum.com.br/produto/1') === 'https://www.kabum.com.br/produto/1'],
+    ['link só no botão (sem texto)', L('Produto sem link no texto', ['https://meli.la/botao']) === 'https://meli.la/botao'],
+    ['pontuação no fim do link', L('Link PC: https://a.aliexpress.com/_pc.') === 'https://a.aliexpress.com/_pc'],
+  ];
+  // Shopee/AliExpress: o link de CUPONS nunca pode ser o de compra; o cupom aparece com o jeito de usar
+  const SH = 'Monitor LG UltraGear 32"\n\n💵 R$ 910\n\n🏷️ Resgate todos os cupons desta página:\nhttps://s.shopee.com.br/CUPONS\n\n✅ Link do produto:\nhttps://s.shopee.com.br/PRODUTO\n\n🔔 BOT: https://t.me/alertadaspromobot';
+  const W3 = '🔥 Samsung Galaxy Watch8\n💵 R$ 1.655 no PIX\n🎟️ Resgate o cupom de R$ 100 OFF aqui:\nhttps://meli.la/CUP\n🔗 LINK: https://meli.la/PROD\nConheça nossos grupos';
+  const W8 = '🔥 Zelda Switch 2\n💵 R$ 408,48 no pix\nResgate cupom 60 off\nhttps://meli.la/CUP8\n✨ Link do produto:\nhttps://meli.la/PROD8\n(anuncio)';
+  lk.push(
+    ['Shopee: compra = produto, não a página de cupons', L(SH) === 'https://s.shopee.com.br/PRODUTO'],
+    ['Shopee: cupom aparece como link a resgatar', cupom(SH).link === 'https://s.shopee.com.br/CUPONS' && /resgate neste link\n+https:\/\/s\.shopee\.com\.br\/CUPONS/.test(linhaCupom(cupom(SH)))],
+    ['cupom por link com valor (R$ 100 OFF)', L(W3) === 'https://meli.la/PROD' && cupom(W3).link === 'https://meli.la/CUP' && cupom(W3).valor === 'R$ 100 OFF'],
+    ['"Resgate cupom 60 off" + link na linha de baixo', L(W8) === 'https://meli.la/PROD8' && cupom(W8).link === 'https://meli.la/CUP8'],
+    ['cupom "no anúncio" avisa onde ativar', /ative na página do produto/.test(linhaCupom(cupom('Monitor R$ 2.899 no pix\nCupom de 15% off no anúncio\n✨ Link do produto:\nhttps://x.com/p')))],
+    ['"Use cupom: no anuncio!" não inventa código', cupom('R$ 1109\nUse cupom: no anuncio!\nLink: https://x.com/p').codigos.length === 0 && cupom('R$ 1109\nUse cupom: no anuncio!').noAnuncio],
+    ['código na linha de baixo', cupom('Fonte R$ 229\nUse o cupom:\nPROMO2026X\nLink: https://x.com/p').codigos[0] === 'PROMO2026X'],
+    ['código no link não vira cupom', cupom('Placa R$ 500 cupom: ABCDE123 https://aoferta.net/AAAAAAAAAA').codigos.join() === 'ABCDE123'],
+    ['Shopee Live: link do cupom = link de compra, não repete', (() => { const tx = '🔥 ( APENAS PELO APLICATIVO ) Placa-Mãe Msi B550m\n💵 R$ 528 REAIS (PIX)\n🎟️Resgate o cupom de 15% OFF na Live no APP aqui:\nhttps://s.shopee.com.br/LIVE\n\nADICIONE PELA SACOLA LARANJA AQUI 74° PRODUTO:\nhttps://s.shopee.com.br/LIVE'; const c = cupom(tx); const compra = L(tx); const l = linhaCupom(c, compra); return compra === 'https://s.shopee.com.br/LIVE' && /vale pelo link de compra/.test(l) && !/https:/.test(l); })()],
+    ['sem cupom: nada a dizer', linhaCupom(cupom('SSD 1TB R$ 599 no PIX https://x.com/p')) === ''],
+    ['código + link: mostra os dois', (() => { const l = linhaCupom(cupom('SSD R$ 599\nCupom: ABCDE12\nResgate o cupom aqui:\nhttps://x.com/c\nLink do produto:\nhttps://x.com/p')); return /ABCDE12/.test(l) && /Resgatar o cupom/.test(l) && /https:\/\/x\.com\/c/.test(l); })()],
+  );
+  // faixa de cor em relação ao teto: 🟢 pouco · 🟡 médio · 🔴 muito abaixo
+  lk.push(
+    ['faixa: 5% abaixo = 🟢', faixaTeto(950, 1000) === '🟢 5% abaixo do teto'],
+    ['faixa: 15% abaixo = 🟡', faixaTeto(850, 1000) === '🟡 15% abaixo do teto'],
+    ['faixa: 30% abaixo = 🔴', faixaTeto(700, 1000) === '🔴 30% abaixo do teto'],
+    ['faixa: 10% já é 🟡 e 20% já é 🔴', faixaTeto(900, 1000).startsWith('🟡') && faixaTeto(800, 1000).startsWith('🔴')],
+    ['faixa: na margem (acima do teto) = 🟢 no teto', faixaTeto(1030, 1000) === '🟢 no teto' && faixaTeto(1000, 1000) === '🟢 no teto'],
+  );
+  let okl = 0; lk.forEach(([n, c]) => { if (c) okl++; else console.log('FALHOU (link/cupom/faixa):', n); });
   // repetição: mesma promo repostada com centavos de diferença = 1 aviso; produto diferente ou queda grande = avisa
   const O = (peca, nome, preco) => ({ peca, nome, preco });
   const ja = [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271))];
@@ -249,8 +344,8 @@ if (process.argv.includes('--teste')) {
     ['nomes diferentes na mesma rodada ficam', unicos([O('Placa-mãe B550 / B550M', 'MSI B550M Gaming Plus WiFi6E', 572), O('Placa-mãe B550 / B550M', 'Pichau Chronos B550M-CR', 574)], []).length === 2],
   ];
   let okr = 0; rep.forEach(([n, c]) => { if (c) okr++; else console.log('FALHOU (repetição):', n); });
-  console.log(ok + '/' + T.length + ' casos de filtro ok · cupom ' + (okc ? 'ok' : 'FALHOU') + ' · repetição ' + okr + '/' + rep.length);
-  process.exit(ok === T.length && okc && okr === rep.length ? 0 : 1);
+  console.log(ok + '/' + T.length + ' casos de filtro ok · cupom ' + (okc ? 'ok' : 'FALHOU') + ' · repetição ' + okr + '/' + rep.length + ' · links ' + okl + '/' + lk.length);
+  process.exit(ok === T.length && okc && okr === rep.length && okl === lk.length ? 0 : 1);
 }
 
 const f = path.join(D, 'msgs.json');
