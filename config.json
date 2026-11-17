@@ -71,7 +71,8 @@
     "Galax GeForce RTX 5060 Ti 8GB",
     "Colorful RTX 5060 8GB",
     "Ryzen 7 5700X3D",
-    "i5-12600K"
+    "i5-12600K",
+    "RTX 5090"
   ],
   "pecas": [
     {
@@ -769,6 +770,29 @@
         "\\bi5-12600K\\b"
       ],
       "exigir": [],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "RTX 5090",
+      "icone": "📦",
+      "rotulo": "RTX 5090",
+      "teto": 22500,
+      "piso": 5625,
+      "ancora": "RTX",
+      "tirar": [],
+      "incluir": [
+        "\\bRTX\\b"
+      ],
+      "exigir": [
+        "\\b5090\\b"
+      ],
       "excluir": [
         "pc gamer",
         "pc completo",
