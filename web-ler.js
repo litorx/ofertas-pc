@@ -41,26 +41,38 @@ async function pagina(canal, antes) {
 }
 
 (async () => {
-  const todas = [];
-  for (const canal of cfg.canaisPublicos) {
+  // Leitura rápida: se o msgs.json é de poucos minutos atrás, só a página mais nova de cada canal (post novo sempre aparece no topo)
+  // e junta com o que já havia. Sem arquivo recente (primeira volta de cada execução), lê tudo até o corte.
+  const arq = path.join(D, 'msgs.json');
+  let antigas = [];
+  try {
+    const prev = JSON.parse(fs.readFileSync(arq, 'utf8'));
+    if (Date.now() - Date.parse(prev.lidoEm) < 10 * 60 * 1000 && !process.env.LEITURA_COMPLETA) antigas = prev.msgs || [];
+  } catch {}
+  const rapido = antigas.length > 0;
+  const lerCanal = async (canal) => {
+    const achadas = [];
     try {
-      let antes = null, n = 0;
-      for (let p = 0; p < 4; p++) { // cada página traz ~20 posts; sobe até passar do corte
+      let antes = null;
+      for (let p = 0; p < (rapido ? 1 : 4); p++) { // cada página traz ~20 posts; sobe até passar do corte
         const msgs = await pagina(canal, antes);
         if (!msgs.length) break;
         const novas = msgs.filter((m) => Date.parse(m.data) >= corte);
-        todas.push(...novas); n += novas.length;
+        achadas.push(...novas);
         const maisVelho = Math.min(...msgs.map((m) => m.id));
         if (novas.length < msgs.length || !isFinite(maisVelho)) break; // já chegou em posts mais velhos que o corte
         antes = maisVelho;
-        await new Promise((r) => setTimeout(r, 400));
+        await new Promise((r) => setTimeout(r, 300));
       }
-      console.log('canal', canal, n);
+      console.log('canal', canal, achadas.length);
     } catch (e) { console.error('falha em', canal, e.message); }
-    await new Promise((r) => setTimeout(r, 400));
-  }
-  todas.sort((a, b) => b.data.localeCompare(a.data));
-  fs.writeFileSync(path.join(D, 'msgs.json'), JSON.stringify({ lidoEm: new Date().toISOString(), msgs: todas }, null, 1));
-  console.log('TOTAL ' + todas.length + ' mensagens (<= ' + horas + 'h)');
+    return achadas;
+  };
+  const lidas = (await Promise.all(cfg.canaisPublicos.map(lerCanal))).flat(); // canais em paralelo
+  const porChave = new Map();
+  for (const m of [...antigas, ...lidas]) if (Date.parse(m.data) >= corte) porChave.set(m.url, m); // a leitura nova substitui a antiga (post editado)
+  const todas = [...porChave.values()].sort((a, b) => b.data.localeCompare(a.data));
+  fs.writeFileSync(arq, JSON.stringify({ lidoEm: new Date().toISOString(), msgs: todas }, null, 1));
+  console.log('TOTAL ' + todas.length + ' mensagens (<= ' + horas + 'h)' + (rapido ? ' [leitura rápida]' : ''));
   if (!todas.length) { console.error('AVISO: nenhuma mensagem lida (pode ser bloqueio ou todos os canais fora do ar)'); }
 })();
