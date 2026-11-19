@@ -80,7 +80,7 @@
       "nome": "RX 9060 XT 16GB",
       "icone": "🎮",
       "rotulo": "PLACA DE VÍDEO · RX 9060 XT 16GB",
-      "teto": 3250,
+      "teto": 3400,
       "piso": 2000,
       "ancora": "placa de v[ií]deo|gpu|radeon|rx\\s*9060",
       "tirar": [
