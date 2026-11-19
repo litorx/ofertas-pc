@@ -116,7 +116,7 @@ if (process.argv.includes('--teste')) teste();
 else {
   const INI = Date.now();
   const DURACAO = Number(process.env.CICLO_SEG || 285) * 1000;
-  const PASSO = Number(process.env.CICLO_PASSO || 10) * 1000; // intervalo entre leituras (s)
+  const PASSO = Number(process.env.CICLO_PASSO || 5) * 1000; // intervalo entre leituras (s)
   const dorme = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const rodar = (cmd, args) => { const r = spawnSync(cmd, args, { stdio: 'inherit', env: process.env }); if (r.status !== 0) console.error('[ciclo] falhou:', cmd, args.join(' '), '->', r.status); return r.status === 0; };
   let volta = 0;
