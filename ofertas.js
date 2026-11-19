@@ -213,8 +213,8 @@ const GENERICAS = new Set(['de', 'da', 'do', 'dos', 'das', 'com', 'para', 'por',
 const tokensProduto = (nome) => [...new Set(semAcento(nome).replace(/[^a-z0-9]+/g, ' ').split(' ').filter((t) => t.length > 1 && !GENERICAS.has(t)))];
 const jaccard = (a, b) => { const B = new Set(b); const i = a.filter((x) => B.has(x)).length; return i / ((a.length + b.length - i) || 1); };
 // Um aviso antigo só bloqueia se (a) o post é ANTERIOR ao aviso (é o mesmo post de antes) ou (b) o aviso foi há menos de ONDA horas
-// (canais repostando a mesma promo). Post NOVO depois disso = a promo voltou (estoque/cupom novo): avisa de novo.
-const ONDA_H = 3;
+// (canais repostando a mesma promo; 8h). Post NOVO depois disso = a promo voltou (estoque/cupom novo): avisa de novo.
+const ONDA_H = 8;
 const bloqueia = (t, o) => { if (!t) return true; const tv = Date.parse(t), post = Date.now() - o.idade * 3600000; return post <= tv || Date.now() - tv < ONDA_H * 3600000; };
 const repetida = (o, vistos) => { const tk = tokensProduto(o.nome); return vistos.some((v) => v.pc === o.peca && Math.abs(v.p - o.preco) / v.p <= 0.05 && jaccard(v.tk, tk) >= 0.6 && bloqueia(v.t, o)); };
 const registro = (o, t) => ({ pc: o.peca, p: o.preco, tk: tokensProduto(o.nome), t });
@@ -350,8 +350,8 @@ if (process.argv.includes('--teste')) {
     ['voltou no dia seguinte (post novo, aviso de 26h atrás)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(26))]).length === 1],
     ['repostagem 20 min depois do aviso (mesma onda)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(0.3))]).length === 0],
     ['post antigo (anterior ao aviso) não volta', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 5 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(4))]).length === 0],
-    ['post novo mas aviso há menos de 3h (mesma onda)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(2))]).length === 0],
-    ['post novo 4h depois do aviso: avisa', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(4))]).length === 1],
+    ['post novo mas aviso há menos de 8h (mesma onda)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(7))]).length === 0],
+    ['post novo 9h depois do aviso: avisa', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(9))]).length === 1],
   ];
   let okr = 0; rep.forEach(([n, c]) => { if (c) okr++; else console.log('FALHOU (repetição):', n); });
   console.log(ok + '/' + T.length + ' casos de filtro ok · cupom ' + (okc ? 'ok' : 'FALHOU') + ' · repetição ' + okr + '/' + rep.length + ' · links ' + okl + '/' + lk.length);
