@@ -73,7 +73,8 @@
     "Colorful RTX 5060 8GB",
     "Ryzen 7 5700X3D",
     "i5-12600K",
-    "RTX 5090"
+    "RTX 5090",
+    "Fonte 650W"
   ],
   "pecas": [
     {
@@ -793,6 +794,29 @@
       ],
       "exigir": [
         "\\b5090\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Fonte 650W",
+      "icone": "📦",
+      "rotulo": "FONTE 650W",
+      "teto": 230,
+      "piso": 58,
+      "ancora": "Fonte",
+      "tirar": [],
+      "incluir": [
+        "\\bFonte\\b"
+      ],
+      "exigir": [
+        "\\b650\\s*W\\b"
       ],
       "excluir": [
         "pc gamer",
