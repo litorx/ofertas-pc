@@ -212,7 +212,11 @@ const semAcento = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-�
 const GENERICAS = new Set(['de', 'da', 'do', 'dos', 'das', 'com', 'para', 'por', 'sem', 'em', 'um', 'uma', 'amd', 'intel', 'gamer', 'gaming', 'preto', 'branco', 'black', 'white', 'am4', 'ddr4', 'mini', 'micro', 'atx', 'matx', 'kit', 'novo', 'nova']);
 const tokensProduto = (nome) => [...new Set(semAcento(nome).replace(/[^a-z0-9]+/g, ' ').split(' ').filter((t) => t.length > 1 && !GENERICAS.has(t)))];
 const jaccard = (a, b) => { const B = new Set(b); const i = a.filter((x) => B.has(x)).length; return i / ((a.length + b.length - i) || 1); };
-const repetida = (o, vistos) => { const tk = tokensProduto(o.nome); return vistos.some((v) => v.pc === o.peca && Math.abs(v.p - o.preco) / v.p <= 0.05 && jaccard(v.tk, tk) >= 0.6); };
+// Um aviso antigo só bloqueia se (a) o post é ANTERIOR ao aviso (é o mesmo post de antes) ou (b) o aviso foi há menos de ONDA horas
+// (canais repostando a mesma promo). Post NOVO depois disso = a promo voltou (estoque/cupom novo): avisa de novo.
+const ONDA_H = 3;
+const bloqueia = (t, o) => { if (!t) return true; const tv = Date.parse(t), post = Date.now() - o.idade * 3600000; return post <= tv || Date.now() - tv < ONDA_H * 3600000; };
+const repetida = (o, vistos) => { const tk = tokensProduto(o.nome); return vistos.some((v) => v.pc === o.peca && Math.abs(v.p - o.preco) / v.p <= 0.05 && jaccard(v.tk, tk) >= 0.6 && bloqueia(v.t, o)); };
 const registro = (o, t) => ({ pc: o.peca, p: o.preco, tk: tokensProduto(o.nome), t });
 // da lista (já ordenada do mais barato ao mais caro) fica só uma por produto, e nenhuma que já foi avisada
 function unicos(lista, jaAvisados) {
@@ -239,9 +243,9 @@ if (process.argv.includes('--teste')) {
     ['RTX 4060Ti 16GB por R$ 3.100', 5, true],
     ['RTX 4060 Ti 16GB por R$ 3.300', 5, false],
     ['Ryzen 7 5700X por R$ 899', 10, true],
-    ['Ryzen 7 5700X3D por R$ 899', 10, false],
+    ['Ryzen 7 5700X3D por R$ 899', 10, true],
     ['Ryzen 5 5600X R$ 649,90', 10, true],
-    ['Ryzen 5 5600 R$ 599,90', 10, false],
+    ['Ryzen 5 5600 R$ 599,90', 10, true],
     ['Placa-mãe MSI B550M Gaming Plus WiFi6E R$ 589', 3, true],
     ['Placa mãe B550 M-Pro R$ 520', 3, true],
     ['Water Cooler 360mm ARGB Branco R$ 279,99', 3, true],
@@ -342,6 +346,12 @@ if (process.argv.includes('--teste')) {
     ['outra peça, mesmo nome', unicos([O('SSD NVMe 512GB', '3 Netac 512GB', 271)], ja).length === 1],
     ['3 repostagens na mesma rodada viram 1', unicos([O('Ryzen 7 5700X', 'Ryzen 7 5700x Oem Sem Cooler', 884), O('Ryzen 7 5700X', 'Ryzen 7 5700x Oem', 888), O('Ryzen 7 5700X', 'Processador Ryzen 7 5700X OEM', 890)], []).length === 1],
     ['nomes diferentes na mesma rodada ficam', unicos([O('Placa-mãe B550 / B550M', 'MSI B550M Gaming Plus WiFi6E', 572), O('Placa-mãe B550 / B550M', 'Pichau Chronos B550M-CR', 574)], []).length === 2],
+    // a promo que VOLTA (post novo, aviso antigo) é avisada de novo; o post antigo e as repostagens da mesma onda não
+    ['voltou no dia seguinte (post novo, aviso de 26h atrás)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(26))]).length === 1],
+    ['repostagem 20 min depois do aviso (mesma onda)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(0.3))]).length === 0],
+    ['post antigo (anterior ao aviso) não volta', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 5 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(4))]).length === 0],
+    ['post novo mas aviso há menos de 3h (mesma onda)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(2))]).length === 0],
+    ['post novo 4h depois do aviso: avisa', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(4))]).length === 1],
   ];
   let okr = 0; rep.forEach(([n, c]) => { if (c) okr++; else console.log('FALHOU (repetição):', n); });
   console.log(ok + '/' + T.length + ' casos de filtro ok · cupom ' + (okc ? 'ok' : 'FALHOU') + ' · repetição ' + okr + '/' + rep.length + ' · links ' + okl + '/' + lk.length);
@@ -366,7 +376,7 @@ const vistos = new Set();
 const prodAvisados = (enviados._prod || []).filter((v) => agora - Date.parse(v.t) < 48 * 3600 * 1000); // produtos avisados nas últimas 48h
 const candidatos = msgs.map((m) => avaliar(m, agora)).filter(Boolean)
   .sort((a, b) => a.idade - b.idade)
-  .filter((o) => { const k = chave(o); if (enviados[k] || vistos.has(k)) return false; vistos.add(k); return true; })
+  .filter((o) => { const k = chave(o); if ((enviados[k] && bloqueia(enviados[k], o)) || vistos.has(k)) return false; vistos.add(k); return true; })
   .sort((a, b) => a.preco - b.preco);
 const achados = unicos(candidatos, prodAvisados); // tira repostagens do mesmo produto com centavos de diferença
 console.log(msgs.length + ' mensagens lidas, ' + achados.length + ' ofertas novas únicas (<= ' + cfg.maxIdadeHoras + 'h)');
