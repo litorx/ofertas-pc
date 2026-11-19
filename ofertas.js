@@ -216,7 +216,9 @@ const jaccard = (a, b) => { const B = new Set(b); const i = a.filter((x) => B.ha
 // (canais repostando a mesma promo; 8h). Post NOVO depois disso = a promo voltou (estoque/cupom novo): avisa de novo.
 const ONDA_H = 8;
 const bloqueia = (t, o) => { if (!t) return true; const tv = Date.parse(t), post = Date.now() - o.idade * 3600000; return post <= tv || Date.now() - tv < ONDA_H * 3600000; };
-const repetida = (o, vistos) => { const tk = tokensProduto(o.nome); return vistos.some((v) => v.pc === o.peca && Math.abs(v.p - o.preco) / v.p <= 0.05 && jaccard(v.tk, tk) >= 0.6 && bloqueia(v.t, o)); };
+const repetida = (o, vistos) => { const tk = tokensProduto(o.nome); return vistos.some((v) => v.pc === o.peca && Math.abs(v.p - o.preco) / v.p <= 0.05 && jaccard(v.tk, tk) >= 0.6 && bloqueia(v.t, o) && !(o.preco <= v.p * MAIS_BARATO)); };
+// Repetida mas MAIS BARATA (pelo menos 2% abaixo do que já foi avisado) é avisada mesmo assim; centavos de diferença entre canais não contam.
+const MAIS_BARATO = 0.98;
 const registro = (o, t) => ({ pc: o.peca, p: o.preco, tk: tokensProduto(o.nome), t });
 // da lista (já ordenada do mais barato ao mais caro) fica só uma por produto, e nenhuma que já foi avisada
 function unicos(lista, jaAvisados) {
@@ -346,6 +348,9 @@ if (process.argv.includes('--teste')) {
     ['outra peça, mesmo nome', unicos([O('SSD NVMe 512GB', '3 Netac 512GB', 271)], ja).length === 1],
     ['3 repostagens na mesma rodada viram 1', unicos([O('Ryzen 7 5700X', 'Ryzen 7 5700x Oem Sem Cooler', 884), O('Ryzen 7 5700X', 'Ryzen 7 5700x Oem', 888), O('Ryzen 7 5700X', 'Processador Ryzen 7 5700X OEM', 890)], []).length === 1],
     ['nomes diferentes na mesma rodada ficam', unicos([O('Placa-mãe B550 / B550M', 'MSI B550M Gaming Plus WiFi6E', 572), O('Placa-mãe B550 / B550M', 'Pichau Chronos B550M-CR', 574)], []).length === 2],
+    ['mesma onda, mas 4% mais barata: avisa', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 260), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(0.3))]).length === 1],
+    ['mesma onda, 1% mais barata (centavos): não avisa', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 268.5), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(0.3))]).length === 0],
+    ['mesma onda, mais cara: não avisa', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 275), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(0.3))]).length === 0],
     // a promo que VOLTA (post novo, aviso antigo) é avisada de novo; o post antigo e as repostagens da mesma onda não
     ['voltou no dia seguinte (post novo, aviso de 26h atrás)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(26))]).length === 1],
     ['repostagem 20 min depois do aviso (mesma onda)', unicos([{ ...O('SSD SATA 512GB', '3 Netac 512GB', 266), idade: 0.1 }], [registro(O('SSD SATA 512GB', '3 Netac 512GB', 271), h(0.3))]).length === 0],
