@@ -75,7 +75,8 @@
     "i5-12600K",
     "RTX 5090",
     "Fonte 650W",
-    "GTA 6"
+    "GTA 6",
+    "GTA vi"
   ],
   "pecas": [
     {
@@ -816,6 +817,29 @@
       ],
       "exigir": [
         "\\b6\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "GTA vi",
+      "icone": "📦",
+      "rotulo": "GTA VI",
+      "teto": 300,
+      "piso": 75,
+      "ancora": "GTA",
+      "tirar": [],
+      "incluir": [
+        "\\bGTA\\b"
+      ],
+      "exigir": [
+        "\\bvi\\b"
       ],
       "excluir": [
         "pc gamer",
