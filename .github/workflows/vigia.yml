@@ -1,6 +1,8 @@
 name: vigia
 
-# Segunda camada: se por algum motivo não houver NENHUMA execução rodando nem na fila, recria a corrente.
+# Segunda camada: se por algum motivo não houver NENHUMA execução viva, recria a corrente.
+# "Viva" = rodando (in_progress) OU na fila há menos de 12 min. Um elo preso em queued/pending por mais
+# tempo que isso é lixo do GitHub (já aconteceu: ficou 1h40 sem runner) e NÃO conta como vivo.
 on:
   schedule:
     - cron: "*/10 * * * *"
@@ -18,15 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Há execução rodando ou na fila? Se não, recomeça a corrente
+      - name: Há execução viva? Se não, recomeça a corrente
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # conta tudo que não está concluído (in_progress, queued, pending, waiting...)
-          ativos=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ofertas.yml/runs?per_page=10" \
-            --jq '[.workflow_runs[] | select(.status != "completed")] | length')
-          echo "execuções ativas/na fila: $ativos"
-          if [ "$ativos" -eq 0 ]; then
+          vivos=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ofertas.yml/runs?per_page=10" \
+            --jq '[.workflow_runs[] | select(.status != "completed")
+                   | select(.status == "in_progress" or ((now - (.created_at | fromdateiso8601)) < 720))] | length')
+          presos=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ofertas.yml/runs?per_page=10" \
+            --jq '[.workflow_runs[] | select(.status != "completed" and .status != "in_progress")
+                   | select((now - (.created_at | fromdateiso8601)) >= 720)] | length')
+          echo "execuções vivas: $vivos | presas na fila (>12 min): $presos"
+          if [ "$vivos" -eq 0 ]; then
             echo "corrente parada: recomeçando"
             gh workflow run ofertas.yml --repo "$GITHUB_REPOSITORY"
           fi
