@@ -196,31 +196,6 @@
       ]
     },
     {
-      "nome": "Placa-mãe B550 / B550M",
-      "icone": "🔧",
-      "rotulo": "PLACA-MÃE · B550 / B550M",
-      "teto": 600,
-      "piso": 300,
-      "ancora": "placa[- ]?m[aã]e",
-      "tirar": [
-        "placa[- ]?m[aã]e",
-        "placa m[aã]e"
-      ],
-      "incluir": [
-        "b550\\s*-?\\s*m?\\b",
-        "\\bb550"
-      ],
-      "exigir": [],
-      "excluir": [
-        "notebook",
-        "pc gamer",
-        "pc completo",
-        "computador",
-        "\\bkit\\b",
-        "ryzen\\s*\\d\\s*\\d{4}x?\\b.*\\bb550|b550.*ryzen\\s*\\d\\s*\\d{4}"
-      ]
-    },
-    {
       "nome": "Water cooler 360 branco",
       "icone": "❄️",
       "rotulo": "WATER COOLER · 360mm branco",
