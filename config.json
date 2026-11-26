@@ -732,29 +732,6 @@
       ]
     },
     {
-      "nome": "Fonte 650W",
-      "icone": "📦",
-      "rotulo": "FONTE 650W",
-      "teto": 230,
-      "piso": 58,
-      "ancora": "Fonte",
-      "tirar": [],
-      "incluir": [
-        "\\bFonte\\b"
-      ],
-      "exigir": [
-        "\\b650\\s*W\\b"
-      ],
-      "excluir": [
-        "pc gamer",
-        "pc completo",
-        "computador",
-        "notebook",
-        "laptop",
-        "kit upgrade"
-      ]
-    },
-    {
       "nome": "GTA 6",
       "icone": "📦",
       "rotulo": "GTA 6",
