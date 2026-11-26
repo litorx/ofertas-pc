@@ -30,7 +30,7 @@ function precos(t) {
 }
 
 // ---- cupom e condições ----
-const NAO_CODIGO = new Set(['CUPOM', 'CUPONS', 'CLIENTE', 'MOEDAS', 'PIX', 'APP', 'LINK', 'PARA', 'COM', 'MELI', 'USE', 'ATE', 'ANUNCIO', 'SELECIONADOS', 'RESGATE', 'PAGINA', 'TODOS', 'DESTA', 'VALIDO']);
+const NAO_CODIGO = new Set(['CUPOM', 'CUPONS', 'CLIENTE', 'MOEDAS', 'PIX', 'APP', 'LINK', 'PARA', 'COM', 'MELI', 'USE', 'ATE', 'ANUNCIO', 'SELECIONADOS', 'RESGATE', 'PAGINA', 'TODOS', 'DESTA', 'VALIDO', 'OFF', 'APLICADO', 'ATIVO', 'ATIVE', 'AQUI', 'ABAIXO', 'SITE', 'ANUNCIO']);
 
 // Cada link do post com o RÓTULO escrito perto dele: na mesma linha ("Link PC: https://...") ou, se o link está sozinho
 // na linha, na linha de cima ("Resgate todos os cupons desta página:" / "Link do produto:").
@@ -65,6 +65,18 @@ function cupom(t) {
     pegar(m[0]);
     if (/[:：]\s*$/.test(m[0])) { const prox = semUrl.slice(re.lastIndex).match(/^\n[ \t]*([^\n]{0,60})/); if (prox) pegar(prox[1]); } // "Use o cupom:\nABC123"
   }
+  // Código logo depois de "cupom:" (ou "-CUPOM: X"), qualquer caixa e a partir de 3 caracteres: "GOTY", "doze600k".
+  // Palavra comum só em minúsculas e sem número ("cupom: aplicado") não é código.
+  const dir = /cupom[^\n:：–-]{0,30}[:：–-]\s*["“`']?([A-Za-z0-9]{3,24})\b/gi; let d;
+  while ((d = dir.exec(semUrl))) {
+    const c = d[1];
+    if (NAO_CODIGO.has(c.toUpperCase())) continue;
+    if (c === c.toLowerCase() && !/\d/.test(c)) continue;
+    codigos.add(c);
+  }
+  // Linha do cupom sem a palavra "cupom": "🎟 R$ 150 OFF em R$ 1499: ACHADINHO"
+  const emoji = /^[ \t]*[🎟🏷][^\n]*?:\s*["“`']?([A-Z0-9]{4,24})["”`']?[ \t]*$/gmu; let e;
+  while ((e = emoji.exec(semUrl))) if (!NAO_CODIGO.has(e[1])) codigos.add(e[1]);
   const temPalavra = /cupom|c[oó]digo promocional/i.test(t);
   const link = (linksDoPost(t).find((l) => l.tipo === 'cupom') || {}).url || '';
   const noAnuncio = /cupom[^\n]{0,40}\ban[uú]ncio|an[uú]ncio[^\n]{0,30}cupom/i.test(t);
@@ -297,7 +309,11 @@ if (process.argv.includes('--teste')) {
   T.forEach(([txt, hrs, esp]) => { const r = !!avaliar({ data: h(hrs), texto: txt, links: [] }, agora); if (r === esp) ok++; else console.log('FALHOU:', txt, '| esperado', esp); });
   // cupom
   const c1 = cupom('Placa Mae R$ 574 com cupom: C0RR1D411D011 ✅ Link'), c2 = cupom('Fonte R$ 297 🎟️ Cupom para cliente Meli+: MELIMAIS1411'), c3 = cupom('SSD 1TB R$ 599 no PIX'), c4 = cupom('R$ 99 use o cupom no app');
-  const okc = c1.codigos[0] === 'C0RR1D411D011' && c2.codigos[0] === 'MELIMAIS1411' && c2.notas.includes('exclusivo Meli+') && !c3.temPalavra && c4.temPalavra && !c4.codigos.length;
+  const cg = (x) => cupom(x).codigos.join(',');
+  const okcx = cg('💵 R$ 305 com cupom: GOTY\n\n✅ Link') === 'GOTY' && cg('💵 R$ 1.062,00 com cupom: doze600k\n') === 'doze600k' && cg('R$ 305\n-CUPOM: GOTY\n\nhttps://x.com') === 'GOTY'
+    && cg('🔥 Cupom Mercado Livre\n\n🎟 R$ 150 OFF em R$ 1499: ACHADINHO\n\nanúncio') === 'ACHADINHO' && cg('R$ 819 com cupom: VALIDO no app') === '' && cg('Cupom: aplicado no carrinho') === '' && cg('Acabou o cupom rapaz') === '';
+  if (!okcx) console.log('FALHOU: códigos curtos / minúsculos / linha 🎟 sem a palavra cupom');
+  const okc = okcx && c1.codigos[0] === 'C0RR1D411D011' && c2.codigos[0] === 'MELIMAIS1411' && c2.notas.includes('exclusivo Meli+') && !c3.temPalavra && c4.temPalavra && !c4.codigos.length;
   // links: sempre o do PC (o do app só abre no celular)
   const L = (texto, links, url) => linkCompra({ m: { texto, links: links || [], url: url || '' } });
   const lk = [
