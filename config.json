@@ -801,31 +801,6 @@
       ]
     },
     {
-      "nome": "fonte 650 plus Gold",
-      "icone": "📦",
-      "rotulo": "FONTE 650 PLUS GOLD",
-      "teto": 290,
-      "piso": 73,
-      "ancora": "fonte",
-      "tirar": [],
-      "incluir": [
-        "\\bfonte\\b"
-      ],
-      "exigir": [
-        "\\b650\\b",
-        "\\bplus\\b",
-        "\\bGold\\b"
-      ],
-      "excluir": [
-        "pc gamer",
-        "pc completo",
-        "computador",
-        "notebook",
-        "laptop",
-        "kit upgrade"
-      ]
-    },
-    {
       "nome": "Ram DDR4 8GB",
       "icone": "📦",
       "rotulo": "RAM DDR4 8GB",
