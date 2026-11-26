@@ -77,7 +77,8 @@
     "Fonte 650W",
     "GTA 6",
     "GTA vi",
-    "fonte 650 plus Gold"
+    "fonte 650 plus Gold",
+    "Ram DDR4 8GB"
   ],
   "pecas": [
     {
@@ -866,6 +867,30 @@
         "\\b650\\b",
         "\\bplus\\b",
         "\\bGold\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Ram DDR4 8GB",
+      "icone": "📦",
+      "rotulo": "RAM DDR4 8GB",
+      "teto": 290,
+      "piso": 73,
+      "ancora": "Ram",
+      "tirar": [],
+      "incluir": [
+        "\\bRam\\b"
+      ],
+      "exigir": [
+        "\\bDDR4\\b",
+        "\\b8\\s*GB\\b"
       ],
       "excluir": [
         "pc gamer",
