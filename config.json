@@ -584,30 +584,6 @@
       ]
     },
     {
-      "nome": "Corsair CX550 550W",
-      "icone": "📦",
-      "rotulo": "CORSAIR CX550 550W",
-      "teto": 340,
-      "piso": 85,
-      "ancora": "Corsair",
-      "tirar": [],
-      "incluir": [
-        "\\bCorsair\\b"
-      ],
-      "exigir": [
-        "\\bCX550\\b",
-        "\\b550\\s*W\\b"
-      ],
-      "excluir": [
-        "pc gamer",
-        "pc completo",
-        "computador",
-        "notebook",
-        "laptop",
-        "kit upgrade"
-      ]
-    },
-    {
       "nome": "intel Arc B580 12GB GDDR6 Maxsun Milestone",
       "icone": "📦",
       "rotulo": "INTEL ARC B580 12GB GDDR6 MAXSUN MILESTONE",
