@@ -227,34 +227,6 @@
       ]
     },
     {
-      "nome": "Fonte 750W",
-      "icone": "⚡",
-      "rotulo": "FONTE · 750W",
-      "teto": 220,
-      "piso": 100,
-      "ancora": "fonte",
-      "tirar": [
-        "fonte( de alimenta[cç][aã]o| alimenta[cç][aã]o)?",
-        "alimenta[cç][aã]o"
-      ],
-      "incluir": [
-        "\\b750\\s*-?\\s*(w\\b|watts)"
-      ],
-      "exigir": [
-        "fonte|psu|80\\s*plus|bronze|gold|atx"
-      ],
-      "excluir": [
-        "gabinete",
-        "pc gamer",
-        "pc completo",
-        "notebook",
-        "nobreak",
-        "estabilizador",
-        "carregador",
-        "\\bkit\\b"
-      ]
-    },
-    {
       "nome": "SSD NVMe 1TB",
       "icone": "💾",
       "rotulo": "SSD NVMe · 1TB",
