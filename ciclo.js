@@ -1,4 +1,4 @@
-// Ciclo da nuvem: cada execução fica ~4m45s em loop e repete o trabalho a cada 60 s.
+// Ciclo da nuvem: cada execução fica ~7min em loop e repete o trabalho a cada 3 s.
 // Cada volta: atualizar do GitHub -> comandos do bot -> ler canais públicos -> filtrar/avisar -> guardar estado.
 //
 // ATENÇÃO (causa de avisos repetidos já vista): o GitHub fixa o código/dados de uma execução no momento em que ela
@@ -115,8 +115,8 @@ function teste() {
 if (process.argv.includes('--teste')) teste();
 else {
   const INI = Date.now();
-  const DURACAO = Number(process.env.CICLO_SEG || 285) * 1000;
-  const PASSO = Number(process.env.CICLO_PASSO || 5) * 1000; // intervalo entre leituras (s)
+  const DURACAO = Number(process.env.CICLO_SEG || 420) * 1000;
+  const PASSO = Number(process.env.CICLO_PASSO || 3) * 1000; // intervalo entre leituras (s)
   const dorme = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const rodar = (cmd, args) => { const r = spawnSync(cmd, args, { stdio: 'inherit', env: process.env }); if (r.status !== 0) console.error('[ciclo] falhou:', cmd, args.join(' '), '->', r.status); return r.status === 0; };
   let volta = 0;

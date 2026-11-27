@@ -248,6 +248,7 @@ if (process.argv.includes('--teste')) {
     ['RX 9060 XT 16GB Asus Prime R$ 3.199 no pix', 5, true],
     ['RX 9060 XT 16GB por R$ 3.400', 5, true],
     ['RX 9060 XT 16GB por R$ 3.500', 5, false],
+    ['🖤 Black Friday Pichau! 🖤 Placa Mae Pichau B550M, DDR4, Socket AM4, M-ATX 🛒 Oferta a partir de R$ 429,99 💳 Ou Parcelado R$ 505,87 ⏳ Estoque limitado', 1, true],
     ['Placa de vídeo RX9060XT 16 GB R$ 3.100', 5, true],
     ['RX 9060 XT 8GB por R$ 2.500', 5, false],
     ['RX 9060 XT 16GB por R$ 3.100', 20, false],

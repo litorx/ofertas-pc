@@ -17,7 +17,7 @@ concurrency:
 jobs:
   rodar:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 9
     steps:
       # 1) PRIMEIRO passo, antes de qualquer outra coisa: já deixa o PRÓXIMO elo na fila.
       #    Assim a corrente não depende do fim desta execução: se ela travar, falhar ou o servidor sumir,
