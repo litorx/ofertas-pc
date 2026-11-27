@@ -83,7 +83,8 @@
     "deepcool ag400",
     "8Bitdo Retro Mechanical Keyboard",
     "Mouse 8BitDo Retro R8",
-    "Notebook Lenovo IdeaPad Slim 3 15IWC11 Intel Core 5 8GB RAM 512GB SSD Linux"
+    "Notebook Lenovo IdeaPad Slim 3 15IWC11 Intel Core 5 8GB RAM 512GB SSD Linux",
+    "Kindle Paperwhite Signature Edition 32 GB"
   ],
   "pecas": [
     {
@@ -904,6 +905,33 @@
         "\\b512\\s*GB\\b",
         "\\bSSD\\b",
         "\\bLinux\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Kindle Paperwhite Signature Edition 32 GB",
+      "icone": "📦",
+      "rotulo": "KINDLE PAPERWHITE SIGNATURE EDITION 32 GB",
+      "teto": 1000,
+      "piso": 250,
+      "ancora": "Kindle",
+      "tirar": [],
+      "incluir": [
+        "\\bKindle\\b"
+      ],
+      "exigir": [
+        "\\bPaperwhite\\b",
+        "\\bSignature\\b",
+        "\\bEdition\\b",
+        "\\b32\\b",
+        "\\bGB\\b"
       ],
       "excluir": [
         "pc gamer",
