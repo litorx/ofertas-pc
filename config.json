@@ -82,7 +82,8 @@
     "Ram DDR4 8GB",
     "deepcool ag400",
     "8Bitdo Retro Mechanical Keyboard",
-    "Mouse 8BitDo Retro R8"
+    "Mouse 8BitDo Retro R8",
+    "Notebook Lenovo IdeaPad Slim 3 15IWC11 Intel Core 5 8GB RAM 512GB SSD Linux"
   ],
   "pecas": [
     {
@@ -868,6 +869,41 @@
         "\\b8BitDo\\b",
         "\\bRetro\\b",
         "\\bR8\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Notebook Lenovo IdeaPad Slim 3 15IWC11 Intel Core 5 8GB RAM 512GB SSD Linux",
+      "icone": "📦",
+      "rotulo": "NOTEBOOK LENOVO IDEAPAD SLIM 3 15IWC11 INTEL CORE 5 8GB RAM 512GB SSD LINUX",
+      "teto": 3100,
+      "piso": 775,
+      "ancora": "Notebook",
+      "tirar": [],
+      "incluir": [
+        "\\bNotebook\\b"
+      ],
+      "exigir": [
+        "\\bLenovo\\b",
+        "\\bIdeaPad\\b",
+        "\\bSlim\\b",
+        "\\b3\\b",
+        "\\b15IWC11\\b",
+        "\\bIntel\\b",
+        "\\bCore\\b",
+        "\\b5\\b",
+        "\\b8\\s*GB\\b",
+        "\\bRAM\\b",
+        "\\b512\\s*GB\\b",
+        "\\bSSD\\b",
+        "\\bLinux\\b"
       ],
       "excluir": [
         "pc gamer",
