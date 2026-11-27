@@ -78,7 +78,8 @@
     "GTA 6",
     "GTA vi",
     "fonte 650 plus Gold",
-    "Ram DDR4 8GB"
+    "Ram DDR4 8GB",
+    "deepcool ag400"
   ],
   "pecas": [
     {
@@ -791,6 +792,29 @@
       "exigir": [
         "\\bDDR4\\b",
         "\\b8\\s*GB\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "deepcool ag400",
+      "icone": "📦",
+      "rotulo": "DEEPCOOL AG400",
+      "teto": 110,
+      "piso": 28,
+      "ancora": "deepcool",
+      "tirar": [],
+      "incluir": [
+        "\\bdeepcool\\b"
+      ],
+      "exigir": [
+        "\\bag400\\b"
       ],
       "excluir": [
         "pc gamer",
