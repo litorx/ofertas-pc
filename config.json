@@ -121,7 +121,7 @@
       "nome": "RTX 4060 Ti 16GB",
       "icone": "🎮",
       "rotulo": "PLACA DE VÍDEO · RTX 4060 Ti 16GB",
-      "teto": 3250,
+      "teto": 3600,
       "piso": 2000,
       "ancora": "placa de v[ií]deo|gpu|geforce|rtx",
       "tirar": [
