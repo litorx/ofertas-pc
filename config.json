@@ -80,7 +80,8 @@
     "fonte 650 plus Gold",
     "Ram DDR4 8GB",
     "deepcool ag400",
-    "8Bitdo Retro Mechanical Keyboard"
+    "8Bitdo Retro Mechanical Keyboard",
+    "Mouse 8BitDo Retro R8"
   ],
   "pecas": [
     {
@@ -841,6 +842,31 @@
         "\\bRetro\\b",
         "\\bMechanical\\b",
         "\\bKeyboard\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "Mouse 8BitDo Retro R8",
+      "icone": "📦",
+      "rotulo": "MOUSE 8BITDO RETRO R8",
+      "teto": 250,
+      "piso": 63,
+      "ancora": "Mouse",
+      "tirar": [],
+      "incluir": [
+        "\\bMouse\\b"
+      ],
+      "exigir": [
+        "\\b8BitDo\\b",
+        "\\bRetro\\b",
+        "\\bR8\\b"
       ],
       "excluir": [
         "pc gamer",
