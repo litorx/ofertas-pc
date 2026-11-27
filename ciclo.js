@@ -40,7 +40,9 @@ function atualizar(dir = process.cwd()) {
 }
 
 // ---- guardar o estado: junta o nosso com o do remoto e envia (tenta de novo se alguém empurrou no meio) ----
-function guardarEstado(dir = process.cwd()) {
+function guardarEstado(dir = process.cwd(), forcar = false) {
+  // Sem mudança local nos arquivos de estado: não há o que guardar, e pular evita um fetch de rede por volta.
+  if (!forcar && !(git(['status', '--porcelain', '--', ...ARQ], dir).stdout || '').trim()) return true;
   for (let t = 0; t < 4; t++) {
     const local = ARQ.map((f) => lerArq(dir, f));
     git(['fetch', '-q', 'origin', 'main'], dir);
@@ -116,17 +118,17 @@ if (process.argv.includes('--teste')) teste();
 else {
   const INI = Date.now();
   const DURACAO = Number(process.env.CICLO_SEG || 420) * 1000;
-  const PASSO = Number(process.env.CICLO_PASSO || 3) * 1000; // intervalo entre leituras (s)
+  const PASSO = Number(process.env.CICLO_PASSO || 2) * 1000; // intervalo entre leituras (s)
   const dorme = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const rodar = (cmd, args) => { const r = spawnSync(cmd, args, { stdio: 'inherit', env: process.env }); if (r.status !== 0) console.error('[ciclo] falhou:', cmd, args.join(' '), '->', r.status); return r.status === 0; };
   let volta = 0;
   for (;;) {
     const t0 = Date.now(); volta++;
     console.log('[ciclo] volta', volta, new Date().toISOString());
-    atualizar();                              // estado e config mais novos (a execução pode ter nascido na fila há minutos)
+    if (volta === 1 || volta % 15 === 0) atualizar(); // estado/config mais novos (a execução nasce na fila há minutos); depois só de tempos em tempos, é rede
     rodar('node', ['bot.js', '--uma-vez']);   // comandos pendentes (/teto, /add ...) aplicam antes de ler as promos
     if (rodar('node', ['web-ler.js'])) rodar('node', ['ofertas.js']);
-    guardarEstado();
+    guardarEstado(undefined, volta === 1);
     const resto = PASSO - (Date.now() - t0);
     if (Date.now() + Math.max(resto, 0) - INI > DURACAO) break;
     dorme(Math.max(resto, 0));
