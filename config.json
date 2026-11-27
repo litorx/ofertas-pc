@@ -79,7 +79,8 @@
     "GTA vi",
     "fonte 650 plus Gold",
     "Ram DDR4 8GB",
-    "deepcool ag400"
+    "deepcool ag400",
+    "8Bitdo Retro Mechanical Keyboard"
   ],
   "pecas": [
     {
@@ -815,6 +816,31 @@
       ],
       "exigir": [
         "\\bag400\\b"
+      ],
+      "excluir": [
+        "pc gamer",
+        "pc completo",
+        "computador",
+        "notebook",
+        "laptop",
+        "kit upgrade"
+      ]
+    },
+    {
+      "nome": "8Bitdo Retro Mechanical Keyboard",
+      "icone": "📦",
+      "rotulo": "8BITDO RETRO MECHANICAL KEYBOARD",
+      "teto": 500,
+      "piso": 125,
+      "ancora": "8Bitdo",
+      "tirar": [],
+      "incluir": [
+        "\\b8Bitdo\\b"
+      ],
+      "exigir": [
+        "\\bRetro\\b",
+        "\\bMechanical\\b",
+        "\\bKeyboard\\b"
       ],
       "excluir": [
         "pc gamer",
