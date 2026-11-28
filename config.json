@@ -205,34 +205,6 @@
       ]
     },
     {
-      "nome": "Water cooler 360 branco",
-      "icone": "❄️",
-      "rotulo": "WATER COOLER · 360mm branco",
-      "teto": 290,
-      "piso": 120,
-      "cor": true,
-      "ancora": "water\\s*-?\\s*cooler|watercooler|cooler l[ií]quido|liquid|aio|refrigera",
-      "tirar": [
-        "water\\s*-?\\s*cooler",
-        "watercooler",
-        "cooler l[ií]quido",
-        "gamer"
-      ],
-      "incluir": [
-        "water\\s*-?\\s*cooler|watercooler|\\bwc\\b|cooler\\s+l[ií]quido|liquid\\s*cooler|\\baio\\b|refrigera[cç][aã]o\\s+l[ií]quida|\\bwater\\b.*360|360.*\\bwater\\b|liquid\\s*freezer|masterliquid|elite\\s*liquid|aqua\\s*elite|lightflow"
-      ],
-      "exigir": [
-        "360"
-      ],
-      "excluir": [
-        "pc gamer",
-        "pc completo",
-        "notebook",
-        "gabinete",
-        "\\bkit\\b.*(ryzen|placa)"
-      ]
-    },
-    {
       "nome": "SSD NVMe 1TB",
       "icone": "💾",
       "rotulo": "SSD NVMe · 1TB",
