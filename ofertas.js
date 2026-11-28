@@ -403,7 +403,11 @@ const candidatos = msgs.map((m) => avaliar(m, agora)).filter(Boolean)
 const achados = unicos(candidatos, prodAvisados); // tira repostagens do mesmo produto com centavos de diferença
 console.log(msgs.length + ' mensagens lidas, ' + achados.length + ' ofertas novas únicas (<= ' + cfg.maxIdadeHoras + 'h)');
 const msgsWa = achados.length ? mensagens(achados) : [];
-if (dry) { console.log(msgsWa.length ? '\n' + msgsWa.join('\n\n======== (próxima mensagem) ========\n\n') : '(nada novo)'); process.exit(0); }
+// Cupons soltos (Meli, Shopee, Amazon, AliExpress, Magalu...): um aviso por cupom, com código, valor, mínimo e condições
+const CUPONS_MAX_IDADE_H = 3, CUPONS_MAX_POR_VOLTA = 8;
+const cuponsNovos = require('./cupons.js').novos(msgs, enviados, agora, CUPONS_MAX_IDADE_H).slice(0, CUPONS_MAX_POR_VOLTA);
+console.log(cuponsNovos.length + ' cupons soltos novos');
+if (dry) { console.log(msgsWa.length ? '\n' + msgsWa.join('\n\n======== (próxima mensagem) ========\n\n') : '(nada novo)'); cuponsNovos.forEach((n) => console.log('\n======== (cupom) ========\n' + require('./cupons.js').mensagem(n))); process.exit(0); }
 // WhatsApp usa *negrito*; o Telegram (HTML) usa <b>. Links com "_" não são afetados (só linhas inteiras _..._ viram itálico).
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const paraHtml = (t) => esc(t).replace(/\*([^*\n]+)\*/g, '<b>$1</b>').replace(/^_(.+)_$/gm, '<i>$1</i>').replace(/`([^`\n]+)`/g, '<code>$1</code>');
@@ -444,6 +448,13 @@ async function enviarTelegram(textos) {
     const ts = new Date().toISOString();
     achados.forEach((o) => { enviados[chave(o)] = ts; }); // só marca como enviado depois do envio dar certo
     prodAvisados.push(...achados.map((o) => registro(o, ts)));
+  }
+  if (CANAL === 'telegram') { // cupons: manda um por vez e marca na hora (se cair no meio, não repete os que já foram)
+    const { mensagem } = require('./cupons.js');
+    for (const n of cuponsNovos) {
+      try { await enviarTelegram([mensagem(n)]); const ts = new Date().toISOString(); n.chaves.forEach((k) => { enviados[k] = ts; }); }
+      catch (e) { console.error('cupom não enviado (tenta na próxima volta):', e.message || e); break; }
+    }
   }
   for (const k of Object.keys(enviados)) if (k !== '_destino' && agora - Date.parse(enviados[k]) > 7 * 86400000) delete enviados[k];
   enviados._prod = prodAvisados.slice(-200);
